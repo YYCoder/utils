@@ -91,6 +91,18 @@
         return listeners;
     };
     /**
+     * 转发事件
+     * @param {Object} [obj](必须) [要转发的对象]
+     * @param {String} [eventName](必须) [要被转发的事件]
+     */
+    function __forward__(obj, eventName) {
+        return function () {
+            var args = [obj, eventName];
+            args = args.concat(objToArray(arguments));
+            observer.trigger.apply(this, args);
+        }
+    }
+    /**
      * 删除本监听对象
      */
     EventListener.prototype.remove = function () {
@@ -160,7 +172,7 @@
     observer.trigger = function (obj, eventName) {
         var listeners;
         var args = objToArray(arguments, 2);
-        if (this.exist(obj, eventName)) {
+        if (observer.exist(obj, eventName)) {
             listeners = getListener(obj, eventName);
             for (var key in listeners) {
                 listeners[key].handler.apply(listeners[key].instance, args);
@@ -197,6 +209,18 @@
             listeners[listenerKey].remove();
         }
     };
+    /**
+     * 转发事件到另一个对象上触发相同事件(前提是另一个对象也有该事件的监听)
+     * 并且执行的函数是每个触发事件对象绑定该事件时的处理函数,但参数都是由第一个触
+     * 发事件对象传入的参数
+     * @param {Object} [from](必须) [添加监听的对象]
+     * @param {String} [eventName](必须) [事件名称]
+     * @param {Object} [to](必须) [转发到哪个对象]
+     * @return {Object} [监听对象]
+     */
+    observer.forward = function (from, eventName, to) {
+        return observer.addListener(from, eventName, __forward__(to, eventName));
+    }
 
 
     
