@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>YY Observer Demo2</title>
+    <script src="observer.js"></script>
+    <!--<script src="observerBjhl.js"></script>-->
+    <script type="text/javascript" charset="utf-8">
+    document.addEventListener('DOMContentLoaded', function() {
+        var obj = {
+            num: 0,
+            set number(val) {
+                this.num = val;
+                observer.trigger(obj, 'change');
+                console.log(obj);
+            },
+            get number() {
+                return this.num;
+            }
+        };
+        var num = document.getElementsByClassName('number')[0];
+        var inp = document.getElementById('change');
+        var clear = document.getElementById('clear');
+        observer.addListener(obj, 'change', function() {
+            num.innerText = obj.number;
+        });
+        inp.addEventListener('input', function() {
+            obj.number = this.value;
+        });
+        clear.addEventListener('click', function() {
+            observer.clearAllListener(obj);
+            console.log(obj);
+        });
+
+        var add = document.getElementById('add');
+        var drop = document.getElementById('drop');
+        add.addEventListener('click', function() {
+            obj.number++;
+        });
+        drop.addEventListener('click', function() {
+            obj.number--;
+        });
+
+
+        function check() {
+            console.log('checked !');
+        }
+
+        /*var throttle = (function () {
+            var beforeTime = +new Date;
+            var timer;
+
+            return function (fun) {
+                var currentTime = +new Date;
+                var delta = currentTime - beforeTime;
+                if (delta > 1000) {
+                    clearTimeout(timer);
+                    beforeTime = currentTime;
+                    num = 0;
+                    fun();
+                } else {
+                    timer = window.setTimeout(fun, delta);
+                }
+            };
+        })();*/
+
+        var throttle = function (func, wait, options) {
+            var context, args, result;
+            var timeout = null;
+            var previous = 0;
+            if (!options) options = {};
+            var later = function () {
+                previous = options.leading === false ? 0 : Date.now();
+                timeout = null;
+                result = func.apply(context, args);
+                if (!timeout) context = args = null;
+            };
+            return function () {
+                var now = Date.now();
+                if (!previous && options.leading === false) previous = now;
+                var remaining = wait - (now - previous);
+                context = this;
+                args = arguments;
+                if (remaining <= 0 || remaining > wait) {
+                    if (timeout) {
+                        clearTimeout(timeout);
+                        timeout = null;
+                    }
+                    previous = now;
+                    result = func.apply(context, args);
+                    if (!timeout) context = args = null;
+                } else if (!timeout && options.trailing !== false) {
+                    timeout = setTimeout(later, remaining);
+                }
+                return result;
+            };
+        };
+        var throttleFun = throttle(check, 1000);
+
+        window.addEventListener('scroll', function() {
+            throttleFun();
+        });
+
+    });
+    </script>
+    <style type="text/css">
+    * {
+        margin: 0;
+    }
+    
+    html,
+    body {
+        /*height: 100%;*/
+        height: 3000px;
+        text-align: center;
+    }
+    
+    h1 {
+        padding: 10px;
+        text-align: center;
+        vertical-align: middle;
+        display: inline-block;
+    }
+    
+    body:before {
+        content: '';
+        width: 0;
+        height: 100%;
+        display: inline-block;
+        vertical-align: middle;
+    }
+    
+    .number {
+        display: inline-block;
+        text-shadow: 2px 2px 3px #999;
+    }
+    
+    .btns {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+    }
+    </style>
+</head>
+
+<body>
+    <h1>Observer Demo2</h1>
+    <div class="btns">
+        <button id="add">+</button>
+        <button id="drop">-</button>
+        <input type="number" id="change">
+        <button id="clear">clear listener</button>
+    </div>
+    <div class="number"></div>
+</body>
+
+</html>

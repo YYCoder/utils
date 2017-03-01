@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>YY Observer Demo1</title>
+    <script src="observer.js"></script>
+    <!--<script src="observerBjhl.js"></script>-->
+    <script type="text/javascript" charset="utf-8">
+        console.log(observer);
+
+        var obj = {
+            name: 'obj',
+            age: 21
+        };
+        var obj2 = {
+            name: 'obj2'
+        };
+        var obj3 = {
+            name: 'obj3'
+        }
+
+        var objListener1 = observer.addListener(obj, 'yyEvent', function () {
+            console.info(this.name + ' yyEvent triggered !');
+            console.log(obj);
+        });
+
+        /*var objListener2 = observer.addListener(obj, 'yyEvent', function (arg1, arg2) {
+            console.info('yyEvent2 triggered !');
+            console.warn(arg1);
+            console.warn(arg2);
+            console.log(this);
+            // console.log(obj);
+        });*/
+
+        var obj2Listener1 = observer.addListenerOnce(obj2, 'yy2Event', function (arg1, arg2) {
+            console.info('yy2Event triggered !');
+            console.warn(arg1);
+            console.warn(arg2);
+            console.log(this);
+            // console.log(obj2);
+        });
+
+        var obj2Listener2 = observer.addListener(obj2, 'yyEvent', function (arg1, arg2) {
+            console.info(this.name + ' yyEvent triggered ! I am ' + this.name);
+            console.warn(arg1);
+            console.warn(arg2);
+            console.log(this);
+            // console.log(obj2);
+        });
+
+        var obj3Listener1 = observer.addListener(obj3, 'yyEvent', function (arg1, arg2) {
+            console.info(this.name + ' yyEvent triggered ! 我是' + this.name);
+            console.warn(arg1);
+            console.warn(arg2);
+            console.log(this);
+            // console.log(obj2);
+        });
+
+        var forward1 = observer.forward(obj, 'yyEvent', obj2);
+        var forward2 = observer.forward(obj2, 'yyEvent', obj3);
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var change = document.querySelector('#change');
+            var del = document.querySelector('#del');
+            change.onclick = function () {
+                obj['age']++;
+                observer.trigger(obj, 'yyEvent', 132, 'yy');
+                observer.trigger(obj2, 'yy2Event', 'yy2', 'yy234');
+            };
+            del.onclick = function () {
+                observer.clearAllListener(obj);
+                observer.clearAllListener(obj2);
+                console.log(obj);
+                console.log(obj2);
+            };
+        });
+
+
+    </script>
+    <style type="text/css">
+        * {
+            margin: 0;
+        }
+        html, body {
+            height: 100%;
+            text-align: center;
+        }
+        h1 {
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+            display: inline-block;
+        }
+        body:before {
+            content: '';
+            width: 0;
+            height: 100%;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Observer Demo1</h1>
+    <button id="change">change</button>
+    <button id="del">delete</button>
+</body>
+</html>
