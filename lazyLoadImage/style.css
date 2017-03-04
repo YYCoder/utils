@@ -29,6 +29,7 @@ div {
     background-repeat: no-repeat;
     background-position: 50%;
     overflow: hidden;
+    padding: 10px;
 }
 img {
     width: 100%;

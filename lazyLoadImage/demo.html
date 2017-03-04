@@ -8,15 +8,17 @@
     <script src="lazyLoadImage.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // lazyLoadImage.init();
+            lazyLoadImage.init();
+            // window.scrollTop = 123;
+            // window.scrollY = 123;
         });
     </script>
 </head>
 <body>
     <div class="wrap">
         <h1 class="title">lazyLoadImage Demo</h1>
-        <div class="row">
-            <div class="img-container">
+        <div class="row" style="position:relative;">
+            <div class="img-container" style="position:relative;">
                 <img data-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1487785465977&di=d34ea4e4710e4a98b7f163470bad03a2&imgtype=0&src=http%3A%2F%2Fimg.taopic.com%2Fuploads%2Fallimg%2F121009%2F240425-121009154K474.jpg">
             </div>
             <div class="img-container">
