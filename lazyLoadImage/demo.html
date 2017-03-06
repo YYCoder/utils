@@ -9,11 +9,22 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             lazyLoadImage.init();
+            var scrollWrap = document.getElementsByClassName('wrap')[0];
+            var scrollHWrap = document.getElementsByClassName('scroll-h')[0];
+
+            // 若是滚动容器中懒加载,需要对该容器绑定scroll事件,并调用refresh()方法
+            scrollWrap.addEventListener('scroll', function (e) {
+                lazyLoadImage.refresh();
+            });
+            scrollHWrap.addEventListener('scroll', function (e) {
+                lazyLoadImage.refresh();
+            });
+
         });
     </script>
 </head>
 <body>
-    <div class="wrap">
+    <div class="wrap" data-scroll-wrap="1">
         <h1 class="title">lazyLoadImage Demo</h1>
 
         <h2 class="title">横向滚动懒加载</h2>

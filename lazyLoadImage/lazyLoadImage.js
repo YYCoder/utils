@@ -1,6 +1,6 @@
 /**
  * lazyLoadImage
- * @author  Markie
+ * @author  Markey
  * @date    2017-03-01
  */
 (function () {
@@ -24,6 +24,9 @@
 
         console.log('init !');
         console.log(imgArr);
+    }
+    lazyLoadImage.refresh = function () {
+        throttleCheck();
     }
 
     // 暂时还没搞懂原理,有空继续研究
@@ -118,18 +121,35 @@
      */
     // 暂时先不解决滚动条容器中的图片懒加载,现在是滚动条容器进入视区就立即加载该容器中所有图片
     function isIntoView(elem) {
+        // 滚动条容器
         var parent = closest(elem, '[data-scroll-wrap]');
-        if (parent instanceof Element) {
-            if (!isIntoView(parent)) {
-                return false;
-            }
-            else {
-                return true;
-            }
+        // 垂直方向进入视区
+        var isVIntoView;
+        // 水平方向进入视区
+        var isHIntoView;
+        // 若支持getBoundingClientRect()方法,最好使用该方法,可直接获取图片相对视区顶部的距离
+        if (typeof elem.getBoundingClientRect === 'function') {
+            var position = elem.getBoundingClientRect();
+            isVIntoView = (position['top'] <= screen.availHeight)
+                       && (position['bottom'] >= 0);
+            isHIntoView = (position['left'] <= screen.availWidth)
+                       && (position['right'] >= 0);
         }
         else {
-            return isVerticalIntoView(elem, parent) && isHorizontalIntoView(elem, parent);
+            if (parent instanceof Element) {
+                if (!isIntoView(parent)) {
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            }
+            else {
+                isVIntoView = isVerticalIntoView(elem, parent);
+                isHIntoView = isHorizontalIntoView(elem, parent);
+            }
         }
+        return isVIntoView && isHIntoView;
     }
     /**
      * 元素垂直方向是否在视区中
@@ -138,16 +158,19 @@
      * @return {Boolean}
      */
     function isVerticalIntoView(elem, container) {
+        var isVerticalIntoView;
         var position = getPosition(elem);
         var windowTop = window.pageYOffset || window.scrollY;
         var windowBottom = windowTop
                          + (window.innerHeight || document.documentElement.clientHeight);
         if (!container || container == window) {
-            return (position['top'] <= windowBottom) && (position['bottom'] >= windowTop);
+            isVerticalIntoView = (position['top'] <= windowBottom)
+                              && (position['bottom'] >= windowTop);
         }
         else {
 
         }
+        return isVerticalIntoView;
     }
     /**
      * 元素水平方向是否在视区中
@@ -156,16 +179,19 @@
      * @return {Boolean}
      */
     function isHorizontalIntoView(elem, container) {
+        var isHorizontalIntoView;
         var position = getPosition(elem);
         var windowLeft = window.pageXOffset || window.scrollX;
         var windowRight = windowLeft
                         + (window.innerWidth || document.documentElement.clientWidth);
         if (!container || container == window) {
-            return (position['left'] >= windowLeft) && (position['right'] <= windowRight);
+            isHorizontalIntoView = (position['left'] <= windowRight)
+                                && (position['right'] >= windowLeft);
         }
         else {
-            
+
         }
+        return isHorizontalIntoView;
     }
 
     /**
@@ -184,7 +210,7 @@
     }
 
     /**
-     * 获取图片相对document左上角的距离
+     * 计算图片相对document左上角的距离
      * @param  {DOM} img(必须) [图片元素]
      * @return {Object}       [坐标对象]     
      */
