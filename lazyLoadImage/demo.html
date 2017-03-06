@@ -13,7 +13,7 @@
             var scrollHWrap = document.getElementsByClassName('scroll-h')[0];
             var scrollVWrap = document.getElementsByClassName('scroll-v')[0];
 
-            // 若是滚动容器中懒加载,需要对该容器绑定scroll事件,并调用refresh()方法
+            // 若是滚动容器中懒加载,需要对该容器添加data-scroll-wrap属性,并绑定scroll事件,调用refresh()方法
             scrollHWrap.addEventListener('scroll', function (e) {
                 lazyLoadImage.refresh();
             });

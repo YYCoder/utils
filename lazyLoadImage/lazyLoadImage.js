@@ -14,10 +14,12 @@
         imgArr = Array.prototype.slice.call(allImgs, 0);
 
         imgArr.forEach(function (elem, index) {
-            elem.style.opacity = '0';
-            elem.style.transitionProperty = 'opacity';
-            elem.style.transitionTimingFunction = 'ease';
-            elem.style.transitionDuration = '0.4s';
+            elem.style.cssText = 'opacity: 0;'
+                               + 'transition-property: opacity;'
+                               + 'transition-timing-function: ease;'
+                               + 'transition-duration: 0.4s;'
+                               + 'width: 100%;'
+                               + 'height: 100%;';
             elem.onload = function () {
                 elem.style.opacity = '1';
             }
@@ -124,7 +126,6 @@
      * @param  {DOM}  elem(必须) [元素]
      * @return {Boolean}
      */
-    // 暂时先不解决滚动条容器中的图片懒加载,现在是滚动条容器进入视区就立即加载该容器中所有图片
     function isIntoView(elem) {
         // 滚动条容器
         var parent = closest(elem, '[data-scroll-wrap]');
@@ -133,14 +134,14 @@
         // 水平方向进入视区
         var isHIntoView;
         // 若支持getBoundingClientRect()方法,最好使用该方法,可直接获取图片相对视区顶部的距离
-        /*if (typeof elem.getBoundingClientRect === 'function') {
+        if (typeof elem.getBoundingClientRect === 'function') {
             var position = elem.getBoundingClientRect();
             isVIntoView = (position['top'] <= screen.availHeight)
                        && (position['bottom'] >= 0);
             isHIntoView = (position['left'] <= screen.availWidth)
                        && (position['right'] >= 0);
         }
-        else {*/
+        else {
             if (parent instanceof Element) {
                 if (!isIntoView(parent)) {
                     return false;
@@ -155,7 +156,7 @@
                 isVIntoView = isVerticalIntoView(elem, parent);
                 isHIntoView = isHorizontalIntoView(elem, parent);
             }
-        // }
+        }
         return isVIntoView && isHIntoView;
     }
     /**
@@ -238,7 +239,8 @@
 
     /**
      * 计算图片相对 body或滚动条容器 左上角的距离
-     * @param  {DOM}     elem(必须)    [元素]
+     * @param  {DOM}     elem(必须)          [元素]
+     * @param  {DOM}     container(非必须)    [容器元素]
      * @return {Object}    
      */
     function getPosition(elem, container) {
