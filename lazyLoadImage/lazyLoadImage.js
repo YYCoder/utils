@@ -10,6 +10,7 @@
 
     lazyLoadImage.init = function () {
         var allImgs = document.getElementsByTagName('img');
+        var allScrollWrap = document.querySelectorAll('[data-scroll-wrap]');
         imgArr = Array.prototype.slice.call(allImgs, 0);
 
         imgArr.forEach(function (elem, index) {
@@ -20,6 +21,10 @@
             elem.onload = function () {
                 elem.style.opacity = '1';
             }
+        });
+        // 设置所有滚动条容器的定位,否则内部子元素无法计算正确的距离
+        allScrollWrap.forEach(function (elem, index) {
+            elem.style.position = 'relative';
         });
 
         console.log('init !');
@@ -128,27 +133,29 @@
         // 水平方向进入视区
         var isHIntoView;
         // 若支持getBoundingClientRect()方法,最好使用该方法,可直接获取图片相对视区顶部的距离
-        if (typeof elem.getBoundingClientRect === 'function') {
+        /*if (typeof elem.getBoundingClientRect === 'function') {
             var position = elem.getBoundingClientRect();
             isVIntoView = (position['top'] <= screen.availHeight)
                        && (position['bottom'] >= 0);
             isHIntoView = (position['left'] <= screen.availWidth)
                        && (position['right'] >= 0);
         }
-        else {
+        else {*/
             if (parent instanceof Element) {
                 if (!isIntoView(parent)) {
                     return false;
                 }
                 else {
-                    return true;
+                    isVIntoView = isVerticalIntoView(elem, parent);
+                    isHIntoView = isHorizontalIntoView(elem, parent);
+                    return isVIntoView && isHIntoView;
                 }
             }
             else {
                 isVIntoView = isVerticalIntoView(elem, parent);
                 isHIntoView = isHorizontalIntoView(elem, parent);
             }
-        }
+        // }
         return isVIntoView && isHIntoView;
     }
     /**
@@ -158,17 +165,27 @@
      * @return {Boolean}
      */
     function isVerticalIntoView(elem, container) {
-        var isVerticalIntoView;
-        var position = getPosition(elem);
-        var windowTop = window.pageYOffset || window.scrollY;
-        var windowBottom = windowTop
-                         + (window.innerHeight || document.documentElement.clientHeight);
+        var isVerticalIntoView,
+            position,
+            windowTop,
+            windowBottom,
+            scrollTop,
+            scrollBottom;
         if (!container || container == window) {
+            position = getPosition(elem);
+            windowTop = window.pageYOffset || window.scrollY;
+            windowBottom = windowTop
+                         + (window.innerHeight || document.documentElement.clientHeight);
             isVerticalIntoView = (position['top'] <= windowBottom)
                               && (position['bottom'] >= windowTop);
         }
         else {
-
+            position = getPosition(elem, container);
+            scrollTop = container.scrollTop;
+            scrollBottom = scrollTop
+                         + window.parseInt(window.getComputedStyle(container).height);
+            isVerticalIntoView = (position['top'] <= scrollBottom)
+                              && (position['bottom'] >= scrollTop)
         }
         return isVerticalIntoView;
     }
@@ -179,17 +196,27 @@
      * @return {Boolean}
      */
     function isHorizontalIntoView(elem, container) {
-        var isHorizontalIntoView;
-        var position = getPosition(elem);
-        var windowLeft = window.pageXOffset || window.scrollX;
-        var windowRight = windowLeft
-                        + (window.innerWidth || document.documentElement.clientWidth);
+        var isHorizontalIntoView,
+            position,
+            windowLeft,
+            windowRight,
+            scrollLeft,
+            scrollRight;
         if (!container || container == window) {
+            position = getPosition(elem);
+            windowLeft = window.pageXOffset || window.scrollX;
+            windowRight = windowLeft
+                        + (window.innerWidth || document.documentElement.clientWidth);
             isHorizontalIntoView = (position['left'] <= windowRight)
                                 && (position['right'] >= windowLeft);
         }
         else {
-
+            position = getPosition(elem, container);
+            scrollLeft = container.scrollLeft;
+            scrollRight = scrollLeft
+                        + window.parseInt(window.getComputedStyle(container).width);
+            isHorizontalIntoView = (position['left'] <= scrollRight)
+                                && (position['right'] >= scrollLeft)
         }
         return isHorizontalIntoView;
     }
@@ -210,13 +237,15 @@
     }
 
     /**
-     * 计算图片相对document左上角的距离
-     * @param  {DOM} img(必须) [图片元素]
-     * @return {Object}       [坐标对象]     
+     * 计算图片相对 body或滚动条容器 左上角的距离
+     * @param  {DOM}     elem(必须)    [元素]
+     * @return {Object}    
      */
-    function getPosition(img) {
+    function getPosition(elem, container) {
+        var parent = container instanceof Element
+                   ? container
+                   : null;
         var position = {};
-        var elem = img;
         position['top'] = 0;
         position['bottom'] = elem.offsetHeight;
         position['left'] = 0;
@@ -226,6 +255,9 @@
             position['top'] += elem.offsetTop;
             position['right'] += elem.offsetLeft;
             position['bottom'] += elem.offsetTop;
+            if (elem.offsetParent === parent) {
+                break;
+            }
             elem = elem.offsetParent;
         }
         return position;

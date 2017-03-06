@@ -11,12 +11,13 @@
             lazyLoadImage.init();
             var scrollWrap = document.getElementsByClassName('wrap')[0];
             var scrollHWrap = document.getElementsByClassName('scroll-h')[0];
+            var scrollVWrap = document.getElementsByClassName('scroll-v')[0];
 
             // 若是滚动容器中懒加载,需要对该容器绑定scroll事件,并调用refresh()方法
-            scrollWrap.addEventListener('scroll', function (e) {
+            scrollHWrap.addEventListener('scroll', function (e) {
                 lazyLoadImage.refresh();
             });
-            scrollHWrap.addEventListener('scroll', function (e) {
+            scrollVWrap.addEventListener('scroll', function (e) {
                 lazyLoadImage.refresh();
             });
 
@@ -24,13 +25,13 @@
     </script>
 </head>
 <body>
-    <div class="wrap" data-scroll-wrap="1">
+    <div class="wrap">
         <h1 class="title">lazyLoadImage Demo</h1>
 
         <h2 class="title">横向滚动懒加载</h2>
-        <div class="row" style="position:relative;">
+        <div class="row">
             <div class="scroll-h" data-scroll-wrap="1">
-                <div class="img-container" style="position:relative;">
+                <div class="img-container">
                     <img data-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1487785465977&di=d34ea4e4710e4a98b7f163470bad03a2&imgtype=0&src=http%3A%2F%2Fimg.taopic.com%2Fuploads%2Fallimg%2F121009%2F240425-121009154K474.jpg">
                 </div>
                 <div class="img-container">
