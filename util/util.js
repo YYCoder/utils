@@ -1,7 +1,7 @@
 /**
  * 各种工具方法
- * @author  WhyCoder
- * @date    2017-02-28
+ * @author          Markey
+ * @date            2017-02-28
  */
 (function () {
     'use strict';
@@ -20,11 +20,10 @@
         'object': obj
     };
 
+
     // 数组方法
     /**
      * 查找数组中所有与指定值相等(strict equality)的元素的索引
-     * @author   yuanye
-     * @date     2017-02-25
      * @param {Array} [a](必选) [被查找的数组]
      * @param {any} [x](必选) [要查找的元素]
      * @return {Array} [匹配元素的索引数组]
@@ -43,8 +42,6 @@
     }
     /**
      * 将类数组对象(arguments || NodeList...)转换成数组。
-     * @author  yuanye
-     * @date    2017.02.26
      * @param {Object} obj 函数参数对象或节点列表.
      * @param {Number} [start] 数组开始元素是从零开始计算的下标。
      * @param {Number} [end] 数组结束元素是从零开始计算的下标.
@@ -57,11 +54,10 @@
         return Array.prototype.slice.call(obj, start, end);
     };
 
+
     // 日期方法
     /*
      * 时间格式转换
-     * @author   yuanye
-     * @date     2017-02-25
      * @param    {String||Number} [date](必选) [时间戳(数值)||日期格式字符串(如2017-10-05 13:04:55)]
      * @param    {String} [format](可选)  [想要输出的时间格式(如 %Y-%m-%d)]
      * 注: format可识别参数: %Y - 包括世纪数的十进制年份;
@@ -135,6 +131,7 @@
         }
     }
 
+
     // 函数方法
     /**
      * 效果类似ES5的bind方法,即修改函数内部的this指向,并在需要调用的时候才调用
@@ -147,21 +144,71 @@
         if (arguments.length > 2) {
             var args = arr['objToArray'](arguments, 2);
             return function () {
-                return handle.apply(context || this, arguments.length > 0 ? args.concat(array.argsToArray(arguments)) :
-                    args);
+                return handle.apply(
+                    context || this, 
+                    (arguments.length > 0)
+                    ? args.concat(array.argsToArray(arguments))
+                    : args);
             }
-        } else {
+        }
+        else {
             return function () {
                 return handle.apply(context || this, arguments)
             }
         }
     };
+    /**
+     * 节流函数
+     * @param  {Function}   func(必须)    [要调用的函数]
+     * @param  {Number}     wait(必须)    [间隔毫秒数]
+     * @param  {Object}     options(可选) 
+     * [若想禁用第一次执行,传{leading: false}; 若想禁用最后一次,传{trailing: false}]
+     * @return {Function}
+     */
+    var throttle = function (func, wait, options) {
+        var context, args, result;
+        var timeout = null;
+        var previous = 0;
+        if (!options) {
+            options = {};
+        }
+        var later = function () {
+            previous = options.leading === false ? 0 : Date.now();
+            timeout = null;
+            result = func.apply(context, args);
+            if (!timeout) {
+                context = args = null;
+            }
+        };
+        return function () {
+            var now = Date.now();
+            if (!previous && options.leading === false) {
+                previous = now;
+            }
+            var remaining = wait - (now - previous);
+            context = this;
+            args = arguments;
+            if (remaining <= 0 || remaining > wait) {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                }
+                previous = now;
+                result = func.apply(context, args);
+                if (!timeout) {
+                    context = args = null;
+                }
+            } else if (!timeout && options.trailing !== false) {
+                timeout = setTimeout(later, remaining);
+            }
+            return result;
+        };
+    };
+
 
     // 对象方法
     /**
      * 判断是不是空对象
-     * @author yuanye
-     * @date   2017.02.25
      * @param {Object} [object] [要判断的对象]
      * @return {Boolean} [是否为空对象]
      */

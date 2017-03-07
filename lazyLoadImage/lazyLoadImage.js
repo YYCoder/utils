@@ -96,7 +96,7 @@
         // 是否匹配选择器
         var isMatched;
         if (elem instanceof Element) {
-            parent = elem.parentElement;
+            parent = elem.parentElement || elem.parentNode;
             if (typeof(selector) === 'string') {
                 while (parent !== document.documentElement) {
                     isMatched = (parent.matchesSelector && parent.matchesSelector(selector))
@@ -105,7 +105,7 @@
                         return parent;
                     }
                     else {
-                        parent = parent.parentElement;
+                        parent = parent.parentElement || parent.parentNode;
                     }
                 }
                 (!isMatched) && (parent = null);

@@ -1,6 +1,6 @@
 /**
  * observer.js
- * @author   WhyCoder
+ * @author   Markey
  * @date     2017-02-23
  */
 (function () {
@@ -25,8 +25,6 @@
      * @param {Object} obj 函数参数对象或节点列表.
      * @param {Number} [start] 数组开始元素是从零开始计算的下标。
      * @param {Number} [end] 数组结束元素是从零开始计算的下标.
-     * @author xuzheng
-     * @date 2015.4.21
      */
     var objToArray = function (obj, start, end) {
         var len = obj.length;
@@ -221,9 +219,6 @@
     observer.forward = function (from, eventName, to) {
         return observer.addListener(from, eventName, __forward__(to, eventName));
     }
-
-
-    
 
 
     window.observer = observer;
