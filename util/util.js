@@ -140,23 +140,24 @@
      * @param  {any}      [any](可选)     [传入绑定函数的参数]
      * @return {Function}           [修改this后的函数]
      */
-    fun['bind'] = function (handle, context) {
+    fun['bind'] = function (fun, context) {
+        var argsOut;
+        var argsIn;
         if (arguments.length > 2) {
-            var args = arr['objToArray'](arguments, 2);
+            argsOut = util['array']['objToArray'](arguments, 2);
             return function () {
-                return handle.apply(
-                    context || this, 
-                    (arguments.length > 0)
-                    ? args.concat(array.argsToArray(arguments))
-                    : args);
+                argsIn = arguments.length > 0
+                       ? util['array']['objToArray'](arguments)
+                       : [];
+                return fun.apply(context || this, argsOut.concat(argsIn));
             }
         }
         else {
             return function () {
-                return handle.apply(context || this, arguments)
+                return fun.apply(context || this, arguments);
             }
         }
-    };
+    }
     /**
      * 节流函数
      * @param  {Function}   func(必须)    [要调用的函数]
@@ -165,44 +166,37 @@
      * [若想禁用第一次执行,传{leading: false}; 若想禁用最后一次,传{trailing: false}]
      * @return {Function}
      */
-    var throttle = function (func, wait, options) {
-        var context, args, result;
-        var timeout = null;
+    fun['throttle'] = function (fun, wait, option) {
+        var args,
+            result,
+            timeout,
+            now;
         var previous = 0;
-        if (!options) {
-            options = {};
-        }
+        var option = option || {};
         var later = function () {
-            previous = options.leading === false ? 0 : Date.now();
-            timeout = null;
-            result = func.apply(context, args);
-            if (!timeout) {
-                context = args = null;
-            }
-        };
+            previous = option.leading === false ? 0 : now;
+            result = fun.apply(this, args);
+            // console.log('timeout');
+        }
         return function () {
-            var now = Date.now();
-            if (!previous && options.leading === false) {
+            now = Date.now();
+            args = arguments;
+            if (previous === 0 && option.leading === false) {
                 previous = now;
             }
-            var remaining = wait - (now - previous);
-            context = this;
-            args = arguments;
-            if (remaining <= 0 || remaining > wait) {
-                if (timeout) {
-                    clearTimeout(timeout);
-                    timeout = null;
-                }
+            var remain = wait - (now - previous);
+            if (remain <= 0) {
                 previous = now;
-                result = func.apply(context, args);
-                if (!timeout) {
-                    context = args = null;
-                }
-            } else if (!timeout && options.trailing !== false) {
-                timeout = setTimeout(later, remaining);
+                clearTimeout(timeout);
+                timeout = null;
+                result = fun.apply(this, args);
+                // console.log('now');
+            }
+            else if (!timeout && option.trailing !== false) {
+                timeout = setTimeout(later, wait);
             }
             return result;
-        };
+        }
     };
 
 

@@ -63,6 +63,6 @@
     };
 
     // 将exports添加到全局
-    window.loadScript = window.ls = exports;
+    window.loadScript = exports;
 
 })()
