@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>util Demo</title>
+    <script src="util.js"></script>
+    <script>
+    'use strict';
+    var throttleFun = util['function']['throttle'](function () {
+        console.log('triggered');
+    }, 300);
+
+    window.addEventListener('mousemove', throttleFun);
+    
+    </script>
+    <style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+    }
+    h1 {
+        display: inline-block;
+        margin: 0;
+    }
+    body:before {
+        content: '';
+        width: 0;
+        height: 100%;
+        vertical-align: middle;
+        display: inline-block;
+    }
+    </style>
+</head>
+<body>
+    <h1>util demo</h1>
+</body>
+</html>

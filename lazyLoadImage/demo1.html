@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <title>YY lazyLoadImage Demo</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="lazyLoadImage.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            lazyLoadImage.init();
+            var scrollWrap = document.getElementsByClassName('wrap')[0];
+            var scrollHWrap = document.getElementsByClassName('scroll-h')[0];
+            var scrollVWrap = document.getElementsByClassName('scroll-v')[0];
+
+            // 若是滚动容器中懒加载,需要对该容器添加data-scroll-wrap属性,并绑定scroll事件,调用refresh()方法
+            scrollHWrap.addEventListener('scroll', function (e) {
+                lazyLoadImage.refresh();
+            });
+            scrollVWrap.addEventListener('scroll', function (e) {
+                lazyLoadImage.refresh();
+            });
+
+        });
+    </script>
+</head>
+<body>
+    <div class="wrap">
+        <h1 class="title">lazyLoadImage Demo</h1>
+
+        <h2 class="title">横向滚动懒加载</h2>
+        <div class="row">
+            <div class="scroll-h" data-scroll-wrap="1">
+                <div class="img-container">
+                    <img data-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1487785465977&di=d34ea4e4710e4a98b7f163470bad03a2&imgtype=0&src=http%3A%2F%2Fimg.taopic.com%2Fuploads%2Fallimg%2F121009%2F240425-121009154K474.jpg">
+                </div>
+                <div class="img-container">
+                    <img data-src="https://imgs.genshuixue.com/0cms/d/file/content/2016/01/5688a3bb71479.jpg">
+                </div>
+                <div class="img-container">
+                    <img data-src="http://pic.58pic.com/58pic/14/27/56/97H58PICjsU_1024.jpg">
+                </div>
+                <div class="img-container">
+                    <img data-src="http://pic17.nipic.com/20111122/6759425_152002413138_2.jpg">
+                </div>
+            </div>
+        </div>
+        
+        <h2 class="title">纵向滚动懒加载</h2>
+        <div class="row">
+            <div class="scroll-v" data-scroll-wrap="1">
+                <div class="img-container">
+                    <img data-src="http://img3.imgtn.bdimg.com/it/u=1670458759,2783974800&fm=23&gp=0.jpg">
+                </div>
+                <div class="img-container">
+                    <img data-src="https://imgs.genshuixue.com/2857092_20k6ph3c.jpeg">
+                </div>
+                <div class="img-container">
+                    <img data-src="http://pic.58pic.com/58pic/13/87/72/73t58PICjpT_1024.jpg">
+                </div>
+                <div class="img-container">
+                    <img data-src="http://pic.58pic.com/58pic/12/39/15/10958PICYjb.jpg">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="img-container">
+                <img data-src="https://imgs.genshuixue.com/5057215_11zoelzr.jpeg">
+            </div>
+            <div class="img-container">
+                <img data-src="https://imgs.genshuixue.com/0cms/d/file/content/2016/01/5688a3d48c14d.jpg">
+            </div>
+            <div class="img-container">
+                <img data-src="http://www.86ps.com/uploadfiles/jpg/2011-8/2011082219485492270.jpg">
+            </div>
+            <div class="img-container">
+                <img data-src="http://scimg.jb51.net/allimg/150703/14-150F3102113Y7.jpg">
+            </div>
+        </div>
+        <div class="row">
+            <div class="img-container">
+                <img data-src="https://imgs.genshuixue.com/0cms/d/file/content/2016/01/5688a3bb71479.jpg">
+            </div>
+            <div class="img-container">
+                <img data-src="https://imgs.genshuixue.com/0cms/d/file/content/2016/01/5688a38f8fb26.jpg">
+            </div>
+            <div class="img-container">
+                <img data-src="http://pic.58pic.com/58pic/13/71/40/95P58PICtdF_1024.jpg">
+            </div>
+            <div class="img-container">
+                <img data-src="http://pic27.nipic.com/20130319/11935511_225831392000_2.jpg">
+            </div>
+        </div>
+        <div class="row">
+            <div class="img-container">
+                <img data-src="https://imgs.genshuixue.com/0cms/d/file/content/2016/01/5688a3a22e769.jpg">
+            </div>
+            <div class="img-container">
+                <img data-src="https://imgs.genshuixue.com/5069385_fxj985q8.jpeg">
+            </div>
+            <div class="img-container">
+                <img data-src="http://img3.3lian.com/2013/c4/86/d/43.jpg">
+            </div>
+            <div class="img-container">
+                <img data-src="http://sc.jb51.net/uploads/allimg/150414/11-150414121036148.jpg">
+            </div>
+        </div>
+        <div class="row">
+            <div class="img-container">
+                <img data-src="https://imgs.genshuixue.com/4654732_q0ombhlo.jpeg">
+            </div>
+            <div class="img-container">
+                <img data-src="https://imgs.genshuixue.com/4654728_0byxvi01.jpeg">
+            </div>
+            <div class="img-container">
+                <img data-src="http://pic.58pic.com/58pic/13/86/90/43A58PICuUn_1024.jpg">
+            </div>
+            <div class="img-container">
+                <img data-src="http://pic.58pic.com/58pic/14/27/54/10q58PIC2bx_1024.jpg">
+            </div>
+        </div>
+        <div class="row">
+            <div class="img-container">
+                <img data-src="https://imgs.genshuixue.com/4770811_ipjj6591.jpeg">
+            </div>
+            <div class="img-container">
+                <img data-src="https://imgs.genshuixue.com/5189350_rgxo83ld.jpg">
+            </div>
+            <div class="img-container">
+                <img data-src="http://pic.58pic.com/58pic/13/71/30/15r58PIChmX_1024.jpg">
+            </div>
+            <div class="img-container">
+                <img data-src="http://sc.jb51.net/uploads/allimg/150511/14-15051115392TZ.jpg">
+            </div>
+        </div>
+        <div class="row">
+            <div class="img-container">
+                <img data-src="http://pic.58pic.com/58pic/13/87/55/39s58PICSRI_1024.jpg">
+            </div>
+            <div class="img-container">
+                <img data-src="http://pic.58pic.com/58pic/13/70/90/29358PICQjG_1024.jpg">
+            </div>
+            <div class="img-container">
+                <img data-src="http://img.taopic.com/uploads/allimg/121203/267873-121203225I999.jpg">
+            </div>
+            <div class="img-container">
+                <img data-src="http://scimg.jb51.net/allimg/150629/14-1506291A242927.jpg">
+            </div>
+        </div>
+    </div>
+</body>
+</html>

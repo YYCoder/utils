@@ -28,7 +28,7 @@
             var imgWrap = closest(elem, '[data-image-wrap]');
             if (imgWrap instanceof Element) {
                 if (imgWrap.dataset['imageWrap'] === 'center') {
-                	
+                	// var width = 
                 }
                 else if (imgWrap.dataset['imageWrap'] === 'image-info') {
                     cssText += 'width: 100%;';

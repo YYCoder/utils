@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LazyLoadImage Demo Page</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1, maximum-scale=1">
+    <style>
+        html, body {
+            margin: 0;
+        }
+
+        body {
+            padding-bottom: 40px;
+        }
+
+        ul, ol {
+            margin: 0;
+            padding: 0;
+        }
+
+        #example1 {
+            position: relative;
+            margin: 5px;
+        }
+
+        #example1 ul {
+            overflow: hidden;
+        }
+
+        #example1 li {
+            display: inline-block;
+            float: left;
+            width: 50%;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+
+        .img-wrap-16-9 {
+            position: relative;
+            padding-bottom: 56.25%;
+        }
+
+        .img-wrap-16-9 img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .text-wrap {
+            position: relative;
+            padding-bottom: 56.25%;
+            text-align: center;
+            background: #0b97c4;
+            color: #fff;
+        }
+
+        .text-wrap span {
+            position: absolute;
+            top: 38%;
+            left: 0;
+            width: 100%;
+        }
+
+        .img-preview {
+            background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAAAhCAMAAACY2smqAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAADBQTFRF2tra39/f5OTk5ubm6enp5eXl6Ojo6 + vr5 + fn6urq8/Pz1NTU7e3t8vLy7Ozs////RtUAMgAAAk5JREFUeNp0lAGSIyEIRREFwSB9/9vux05nMrW7VKViwxMFAdo7Xm2stfb/BcbYm/ZqrVHTWP/GSz2ZyBZQkpgCmjOO4ZfsGI3gSajQxmNGzI6tUEqP6XPiF11wHhFrRHIrVNqw4RnAlbmMjzTuevRDGxeaNMxGlu6R/PnCssw0Cp00dAYUvauX6ZFIh2SZlOL2OjO7jFzbTT5weGeFdEsEQu9khXNct6zebzaMYx1NsoeXVzjNyev6iMu5KvtHs2REQwYWtzjkwFPMsqhFhhxy + /G8xOGWNpni9PU6QmXhTO/4TypVg2pxkBGCEqxJBj1s2DknX/TZnoqE9 + bjuhrwfQxcPqbV7vVWtbqC1dPrxvH + 3IFwcjd8NhBXOzq4Fa8ntgWK1rrVpZ8SRUF/XwHHKtCXHvRHgI4bpXaTLwU6gZrmddGHrAuIxnP2EXxpYh87YrCPOuvF3CsBX7srWwjrZOZxW7E4knV9ucW + 6FnJCsMjvYMqBB6Q2euJ6VWvwdNbPUFUFCgLy/crVgnUcqLOz8J74Ak2Wis + hXXIquhfFQRf0QatTnAidltWoEYNouNnuzKqGz7XJlQoKpZHpLElSzfrxt7F0bKhYijKdtrQaFSBzrs70KfVV4LYUoW5D3RMyumCvZj8q6NQRGIs + bQi/qeSrkLRMjTmr + 6b87sdQfI6Xg/bZ/5PXA75RpdSM/j6m5uOQrUzzOg9xPapXK8RdO84i1HFL/see/SZeLuDbghJdUCQXa6R1fczIOl7OkZZn6GFVRuxfybpHwEGADm2M4cHNA97AAAAAElFTkSuQmCC");
+            background-size: 42px;
+            background-color: #f2f2f2;
+            background-repeat: no-repeat;
+            background-position: 50%;
+            overflow: hidden;
+        }
+
+        .rich-info-container img {
+            max-width: 100%;
+        }
+
+        .tab-panels {
+
+        }
+
+        img, img a {
+            border: 0;
+            vertical-align: middle;
+        }
+
+    </style>
+    <script src="lazyLoadImage.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            lazyLoadImage.init();
+            lazyLoadImage.reload();
+        });
+    </script>
+</head>
+<body>
+<div>
+    <h1>不定宽高, 图片最大宽度100%, 通常用于图文详情</h1>
+    <div class="rich-info-container" style="border:1px solid #333333;margin:5px;" data-image-wrap="image-info">
+        <p style="padding:0px;border:0px;text-align:center;color:rgb(61,61,61);line-height:21px;font-family:PingHei, 'Hiragino Sans GB', 'Microsoft YaHei', arial, sans-serif;margin-top:0px;margin-bottom:0px;vertical-align:baseline;white-space:normal;background-color:rgb(255,255,255);">
+            <span style="margin:0px;padding:0px;border:0px;line-height:inherit;font-family:inherit;font-size:20px;font-style:inherit;font-variant:inherit;font-weight:inherit;vertical-align:baseline;">
+                <span style="font:inherit;margin:0px;padding:0px;border:0px;vertical-align:baseline;">参加活动的作弊神器</span>
+            </span>
+        </p>
+        <p style="padding:0px;border:0px;text-align:center;color:rgb(61,61,61);line-height:21px;font-family:PingHei, 'Hiragino Sans GB', 'Microsoft YaHei', arial, sans-serif;margin-top:0px;margin-bottom:0px;vertical-align:baseline;white-space:normal;background-color:rgb(255,255,255);">
+            <span style="margin:0px;padding:0px;border:0px;line-height:inherit;font-family:inherit;font-size:20px;font-style:inherit;font-variant:inherit;font-weight:inherit;vertical-align:baseline;">
+                <span style="font:inherit;margin:0px;padding:0px;border:0px;vertical-align:baseline;">独创“箭头法”一招教会你演唱歌曲，不用担心跑调问题。</span>
+            </span>
+        </p>
+        <p style="padding:0px;border:0px;text-align:center;color:rgb(61,61,61);line-height:21px;font-family:PingHei, 'Hiragino Sans GB', 'Microsoft YaHei', arial, sans-serif;margin-top:0px;margin-bottom:0px;vertical-align:baseline;white-space:normal;background-color:rgb(255,255,255);">
+            <span style="margin:0px;padding:0px;border:0px;line-height:inherit;font-family:inherit;font-size:20px;font-style:inherit;font-variant:inherit;font-weight:inherit;vertical-align:baseline;">
+                <span style="font:inherit;margin:0px;padding:0px;border:0px;vertical-align:baseline;">20分钟教你如何完美演唱一首歌。快速学习赢取大奖。</span>
+            </span>
+        </p>
+        <p style="padding:0px;border:0px;text-align:center;color:rgb(61,61,61);line-height:21px;font-family:PingHei, 'Hiragino Sans GB', 'Microsoft YaHei', arial, sans-serif;margin-top:0px;margin-bottom:0px;vertical-align:baseline;white-space:normal;background-color:rgb(255,255,255);">
+            <img data-src="https://imgs.genshuixue.com/4654724_vcd05jai.jpeg"/>
+
+            <img data-src="https://imgs.genshuixue.com/4654727_6rosihmt.jpeg"/>
+
+            <img data-src="https://imgs.genshuixue.com/4654728_0byxvi01.jpeg"/>
+
+            <img data-src="https://imgs.genshuixue.com/4654732_q0ombhlo.jpeg"/>
+        </p>
+    </div>
+</div>
+</body>
+</html>
