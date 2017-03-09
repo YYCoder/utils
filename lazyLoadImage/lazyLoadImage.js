@@ -8,20 +8,40 @@
     var lazyLoadImage = {};
     var imgArr = [];
 
+    // 说明: 
+    // 用法一: 在DOM ready后调用init()方法,初始化所有图片,并默认在window.scroll事件
+    // 中刷新需要加载的图片;
+    // 用法二: 若是滚动容器中懒加载,需要对该容器添加data-scroll-wrap属性,并绑定scroll事件,
+    // 调用refresh()方法;
+    // 用法三: 加载图文详情图片,给容器加data-image-wrap="image-info"属性,
+    // 图片自动设置width: 100%显示;
     lazyLoadImage.init = function () {
         var allImgs = document.getElementsByTagName('img');
         var allScrollWrap = document.querySelectorAll('[data-scroll-wrap]');
         imgArr = Array.prototype.slice.call(allImgs, 0);
 
         imgArr.forEach(function (elem, index) {
-            elem.style.cssText = 'opacity: 0;'
-                               + 'transition-property: opacity;'
-                               + 'transition-timing-function: ease;'
-                               + 'transition-duration: 0.4s;'
-                               + 'width: 100%;'
-                               + 'height: 100%;';
+            var cssText = 'opacity: 0;'
+                        + 'transition-property: opacity;'
+                        + 'transition-timing-function: ease;'
+                        + 'transition-duration: 0.4s;';
+            var imgWrap = closest(elem, '[data-image-wrap]');
+            if (imgWrap instanceof Element) {
+                if (imgWrap.dataset['imageWrap'] === 'center') {
+                	
+                }
+                else if (imgWrap.dataset['imageWrap'] === 'image-info') {
+                    cssText += 'width: 100%;';
+                }
+            }
+            else {
+                cssText += 'width: 100%;height: 100%;';
+            }
+            elem.style.cssText = cssText;
+
             elem.onload = function () {
                 elem.style.opacity = '1';
+                elem.onload = null;
             }
         });
         // 设置所有滚动条容器的定位,否则内部子元素无法计算正确的距离
@@ -35,8 +55,11 @@
     lazyLoadImage.refresh = function () {
         throttleCheck();
     }
+    // 手动加载所有进入视区的图片
+    lazyLoadImage.reload = function () {
+        check();
+    }
 
-    // 暂时还没搞懂原理,有空继续研究
     /**
      * 节流函数
      * @param  {Function} func(必须)    [要调用的函数]
@@ -44,46 +67,39 @@
      * @param  {[type]} options [description]
      * @return {Function}
      */
-    var throttle = function (func, wait, options) {
-        var context, args, result;
-        var timeout = null;
+    var throttle = function (fun, wait, option) {
+        var args,
+            result,
+            timeout,
+            now;
         var previous = 0;
-        if (!options) {
-            options = {};
-        }
+        var option = option || {};
         var later = function () {
-            previous = options.leading === false ? 0 : Date.now();
-            timeout = null;
-            result = func.apply(context, args);
-            if (!timeout) {
-                context = args = null;
-            }
-        };
+            previous = option.leading === false ? 0 : now;
+            result = fun.apply(this, args);
+            // console.log('timeout');
+        }
         return function () {
-            var now = Date.now();
-            if (!previous && options.leading === false) {
+            now = Date.now();
+            args = arguments;
+            if (previous === 0 && option.leading === false) {
                 previous = now;
             }
-            var remaining = wait - (now - previous);
-            context = this;
-            args = arguments;
-            if (remaining <= 0 || remaining > wait) {
-                if (timeout) {
-                    clearTimeout(timeout);
-                    timeout = null;
-                }
+            var remain = wait - (now - previous);
+            if (remain <= 0) {
                 previous = now;
-                result = func.apply(context, args);
-                if (!timeout) {
-                    context = args = null;
-                }
-            } else if (!timeout && options.trailing !== false) {
-                timeout = setTimeout(later, remaining);
+                clearTimeout(timeout);
+                timeout = null;
+                result = fun.apply(this, args);
+                // console.log('now');
+            }
+            else if (!timeout && option.trailing !== false) {
+                timeout = setTimeout(later, wait);
             }
             return result;
-        };
+        }
     };
-    var throttleCheck = throttle(check, 1000);
+    var throttleCheck = throttle(check, 500);
 
     /**
      * 获取最近的满足选择器匹配的祖先(父)元素
