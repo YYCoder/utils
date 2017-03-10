@@ -10,11 +10,12 @@
 
     // 说明: 
     // 用法一: 在DOM ready后调用init()方法,初始化所有图片,并默认在window.scroll事件
-    // 中刷新需要加载的图片;
+    // 中刷新需要加载的图片,默认图片宽高是100%;
     // 用法二: 若是滚动容器中懒加载,需要对该容器添加data-scroll-wrap属性,并绑定scroll事件,
     // 调用refresh()方法;
     // 用法三: 加载图文详情图片,给容器加data-image-wrap="image-info"属性,
     // 图片自动设置width: 100%显示;
+    // 用法四: 加载等比缩放并且居中显示的图片,给容器加data-image-wrap="center"属性
     lazyLoadImage.init = function () {
         var allImgs = document.getElementsByTagName('img');
         var allScrollWrap = document.querySelectorAll('[data-scroll-wrap]');
@@ -28,7 +29,12 @@
             var imgWrap = closest(elem, '[data-image-wrap]');
             if (imgWrap instanceof Element) {
                 if (imgWrap.dataset['imageWrap'] === 'center') {
-                	// var width = 
+                    imgWrap.style.cssText = 'position: relative;';
+                    cssText += 'max-width: 100%; max-height: 100%;'
+                             + 'position: absolute;'
+                             + 'left: 50%;'
+                             + 'top: 50%;'
+                             + 'transform: translate(-50%, -50%);';
                 }
                 else if (imgWrap.dataset['imageWrap'] === 'image-info') {
                     cssText += 'width: 100%;';
