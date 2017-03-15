@@ -49,7 +49,7 @@
 		var cookies = document.cookie,
 			  index = cookies.indexOf(name),
 			  reg = new RegExp(name + '=.*;?');
-		return reg.exec(cookies)[0].slice(name.length + 1);
+		return decodeURIComponent(reg.exec(cookies)[0].slice(name.length + 1));
 	}
 
 	/**
@@ -57,9 +57,30 @@
 	 * @param  {String}  name(必须)  [cookie名]
 	 */
 	cookie.removeCookie = function (name) {
-		var val = cookie.getCookie(name);
+		var val = encodeURIComponent(cookie.getCookie(name));
 		cookie.setCookie(name, val, {expires: 0});
 	}
+
+	/**
+	 * 获取所有cookie
+	 * @return {Array} [所有的cookie以Object形式返回]
+	 */
+	cookie.getAllCookies = function () {
+		var cookiesArr = document.cookie.split(';'),
+		    resArr = [],
+		    key,
+				val;
+		cookiesArr.forEach(function (elem) {
+			key = elem.replace(/=.+/, '');
+			val = elem.replace(/.+=/, '');
+			resArr.push({
+				name:  key,
+				value: val
+			});
+		});
+		return resArr;
+	}
+
 
 	window.cookie = cookie;
 
