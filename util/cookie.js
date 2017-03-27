@@ -3,7 +3,14 @@
  * @author     Markey
  * @date 			 2017-03-15
  */
-(function () {
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ?
+																		module.exports = factory() :
+	typeof define === 'function' && define.amd ?
+														 define(factory) : (global.cookie = factory());
+}(this, function () {
+	'use strict';
+
 	var cookie = {};
 
 	/**
@@ -12,7 +19,6 @@
 	 * @param 	{String} 	value(必须) 	[cookie值]
 	 * @param 	{Object} 	opt(可选) 		[cookie设置项对象]
 	 * opt: {
-	 * 				domain:   cookie可用地址,
 	 * 				path:  		cookie可用路径,
 	 * 				expires:  cookie可存在时间(小时),
 	 * 				secure:   cookie是否只在https协议下传输.
@@ -27,8 +33,6 @@
 			(opt.expires || opt.expires == 0) ? timeSpan = Date.now() + opt.expires * HOURS
 																				: timeSpan = Date.now() + 24 * HOURS;
 			newCookie += 'expires=' + new Date(timeSpan).toGMTString() + ';';
-			// 暂时不清除domain为什么设置成不同源的域名会设置失败????还有设置path对cookie的影响
-			// newCookie += 'domain=' + (opt.domain || location.host) + ';';
 			newCookie += 'domain=' + location.host + ';';
 			newCookie += 'path=' + (opt.path || '/') + ';'
 			opt.secure && (newCookie += 'secure=' + opt.secure + ';');
@@ -82,6 +86,6 @@
 	}
 
 
-	window.cookie = cookie;
+	return cookie;
 
-})();
+}));
