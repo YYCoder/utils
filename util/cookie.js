@@ -53,7 +53,7 @@
 		var cookies = document.cookie,
 			  index = cookies.indexOf(name),
 			  reg = new RegExp(name + '=.*;?');
-		return decodeURIComponent(reg.exec(cookies)[0].slice(name.length + 1));
+		return index === -1 ? '' : decodeURIComponent(reg.exec(cookies)[0].slice(name.length + 1));
 	}
 
 	/**
