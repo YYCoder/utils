@@ -11,7 +11,29 @@
     }, 300);
 
     window.addEventListener('mousemove', throttleFun);
-    
+
+
+    var obj2 = {
+        name: '袁野',
+        age: 22
+    },
+    obj1 = {
+        name: 'yuanye',
+        like: ['coding', 'reading'],
+        fun: function () {
+            console.log(123);
+        },
+        toObj: obj2
+    },
+    arr = [1, 2, 3, {
+        name: 4
+    }];
+    var newObj = util['object'].deepClone(obj1),
+        newArr = util['object'].deepClone(arr);
+    obj2.name = '123';
+    console.log(obj1);
+    console.log(newObj);
+    console.log(newArr);
     </script>
     <style>
     html, body {

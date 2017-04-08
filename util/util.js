@@ -3,7 +3,12 @@
  * @author          Markey
  * @date            2017-02-28
  */
-(function () {
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ?
+                                      module.exports = factory() :
+    typeof define === 'function' && define.amd ?
+                               define(factory) : (global.util = factory());
+}(this, function () {
     'use strict';
 
     var arr = {};
@@ -138,7 +143,7 @@
      * @param  {Function} [handle](必须)  [要绑定的函数]
      * @param  {any}      [context](必须) [要修改的this]
      * @param  {any}      [any](可选)     [传入绑定函数的参数]
-     * @return {Function}           [修改this后的函数]
+     * @return {Function}                 [修改this后的函数]
      */
     fun['bind'] = function (fun, context) {
         var argsOut;
@@ -162,7 +167,7 @@
      * 节流函数
      * @param  {Function}   func(必须)    [要调用的函数]
      * @param  {Number}     wait(必须)    [间隔毫秒数]
-     * @param  {Object}     options(可选) 
+     * @param  {Object}     options(可选)
      * [若想禁用第一次执行,传{leading: false}; 若想禁用最后一次,传{trailing: false}]
      * @return {Function}
      */
@@ -214,9 +219,36 @@
         }
         return true;
     };
-    
+
+    /**
+     * 深度克隆
+     * @param  {任意类型}  [o]   [要克隆的对象]
+     * @return {Object}    [克隆完成的对象]
+     */
+    obj['deepClone'] = function deepClone(o) {
+        var res;
+        if (typeof(o) !== 'object') {
+            return o;
+        }
+        else if (o instanceof Array) {
+            res = [];
+            for (var i = 0; i < o.length; i++) {
+                typeof(o[i]) === 'object' ? res[i] = deepClone(o[i])
+                                          : res[i] = o[i];
+            }
+        }
+        else {
+            res = {};
+            for(var k in o) {
+                typeof(o[k]) === 'object' ? res[k] = deepClone(o[k])
+                                          : res[k] = o[k];
+            }
+        }
+        return res;
+    }
 
 
-    window.util = util;
 
-})();
+    return util;
+
+}));
