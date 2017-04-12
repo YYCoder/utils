@@ -3,7 +3,12 @@
  * @author   Markey
  * @date     2017-02-23
  */
-(function () {
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ?
+                                      module.exports = factory() :
+    typeof define === 'function' && define.amd ?
+                               define(factory) : (global.observer = factory());
+}(this, function () {
     'use strict';
 
     var observer = {};
@@ -221,6 +226,6 @@
     }
 
 
-    window.observer = observer;
+    return observer;
 
-})();
+}));

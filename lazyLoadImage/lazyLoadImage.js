@@ -3,12 +3,17 @@
  * @author  Markey
  * @date    2017-03-01
  */
-(function () {
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ?
+                                      module.exports = factory() :
+    typeof define === 'function' && define.amd ?
+                               define(factory) : (global.lazyLoadImage = factory());
+}(this, function () {
     'use strict';
     var lazyLoadImage = {};
     var imgArr = [];
 
-    // 说明: 
+    // 说明:
     // 用法一: 在DOM ready后调用init()方法,初始化所有图片,并默认在window.scroll事件
     // 中刷新需要加载的图片,默认图片宽高是100%;
     // 用法二: 若是滚动容器中懒加载,需要对该容器添加data-scroll-wrap属性,并绑定scroll事件,
@@ -263,7 +268,7 @@
      * 计算图片相对 body或滚动条容器 左上角的距离
      * @param  {DOM}     elem(必须)          [元素]
      * @param  {DOM}     container(非必须)    [容器元素]
-     * @return {Object}    
+     * @return {Object}
      */
     function getPosition(elem, container) {
         var parent = container instanceof Element
@@ -287,9 +292,9 @@
         return position;
     }
 
-    window.lazyLoadImage = lazyLoadImage;
     window.addEventListener('scroll', function () {
         throttleCheck();
     });
+    return lazyLoadImage;
 
 })();
