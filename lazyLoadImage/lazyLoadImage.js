@@ -22,7 +22,7 @@
     // 图片自动设置width: 100%显示;
     // 用法四: 加载等比缩放并且居中显示的图片,给容器加data-image-wrap="center"属性
     lazyLoadImage.init = function () {
-        var allImgs = document.getElementsByTagName('img');
+        var allImgs = document.querySelectorAll('img[data-src]');
         var allScrollWrap = document.querySelectorAll('[data-scroll-wrap]');
         imgArr = Array.prototype.slice.call(allImgs, 0);
 
@@ -48,10 +48,15 @@
             else {
                 cssText += 'width: 100%;height: 100%;';
             }
-            elem.style.cssText = cssText;
 
+            // 防止多次调用init重复设置
+            if (!elem.dataset['hasLoad']) {
+                elem.style.cssText = cssText;
+            }
+            // 为什么不用addEventListener?因为onload重复绑定会覆盖之前绑定的,可以防止重复调用init导致绑定多次
             elem.onload = function () {
                 elem.style.opacity = '1';
+                elem.dataset['hasLoad'] = '1';
                 elem.onload = null;
             }
         });
@@ -60,7 +65,7 @@
             elem.style.position = 'relative';
         });
 
-        console.log('init !');
+        // console.log('init !');
         console.log(imgArr);
     }
     lazyLoadImage.refresh = function () {
@@ -297,4 +302,4 @@
     });
     return lazyLoadImage;
 
-})();
+}));
