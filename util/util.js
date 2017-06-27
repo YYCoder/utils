@@ -203,6 +203,16 @@
             return result;
         }
     };
+    /**
+     * 阻塞函数
+     * @param  {Number}   milliSeconds(必须)    [要阻塞的毫秒数]
+     */
+    fun['sleep'] = function (milliSeconds) {
+        var now = Date.now();
+        if (typeof milliSeconds !== 'number') console.error('请传入数值类型的参数');
+        while (Date.now() < now + milliSeconds);
+    }
+
 
 
     // 对象方法
