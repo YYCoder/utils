@@ -59,6 +59,25 @@
         return Array.prototype.slice.call(obj, start, end);
     };
 
+    /**
+     * 给对象数组排序(返回新数组)
+     * @param  {Array} arr [要排序的数组]
+     * @param  {String} key [按那个键排序, 目前只能给数值类型的键排序]
+     * @param  {Boolean} desc [是否按降序排列, 默认为false]
+     * @return {Array}     [排序后的数组]
+     */
+    arr['sortObjs'] = function (arr, key, desc) {
+        var isDesc = desc || false;
+        if (Array.isArray(arr) && key) {
+            return arr.sort(function (ele1, ele2) {
+                return isDesc ? ele2[key] - ele1[key] : ele1[key] - ele2[key];
+            });          
+        }
+        else {
+            console.error('Error: illegal arguments');
+        }
+    }
+
 
     // 日期方法
     /*

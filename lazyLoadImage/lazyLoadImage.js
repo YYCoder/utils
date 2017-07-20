@@ -147,7 +147,7 @@
             }
         }
         else {
-            console.warn('invalid parameter 1 !');
+            throw new Error('[lazyLoadImage Error]: invalid parameter 1 !');
             parent = null;
         }
         return parent;
