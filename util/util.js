@@ -26,6 +26,45 @@
     };
 
 
+    // 字符串方法
+    /**
+     * 去除字符串收尾指定字符
+     * @param  {[String]} str [原字符串]
+     * @param  {[String]} char [要去除的字符，默认为空格]
+     * @return {[String]}      [结果字符]
+     */
+    str['trim'] = function (str, char) {
+        var res = str,
+            c = char || ' ';
+        if (str) {
+            return res.replace(new RegExp('^\\'+c+'+|\\'+c+'+$', 'g'), '');
+        }
+        else {
+            console.warn('请传入正确的参数');
+        }
+    }
+    str['trimLeft'] = function (str, char) {
+        var res = str,
+            c = char || ' ';
+        if (str) {
+            return res.replace(new RegExp('^\\'+c+'+'), '');
+        }
+        else {
+            console.warn('请传入正确的参数');
+        }
+    }
+    str['trimRight'] = function (str, char) {
+        var res = str,
+            c = char || ' ';
+        if (str) {
+            return res.replace(new RegExp('\\'+c+'+$'), '');
+        }
+        else {
+            console.warn('请传入正确的参数');
+        }
+    }        
+
+
     // 数组方法
     /**
      * 查找数组中所有与指定值相等(strict equality)的元素的索引
@@ -44,6 +83,23 @@
             pos += 1; //从下一个位置开始搜索
         }
         return result;
+    }
+    /**
+     * 模拟ES6 find方法，若只有一个匹配结果，则直接返回，其余都返回数组
+     * @param  {[type]} arr [description]
+     * @param  {[type]} fun [description]
+     * @return {[type]}     [description]
+     */
+    arr['find'] = function (arr, fun) {
+      if (Array.isArray(arr) && typeof fun === 'function') {
+        let res = []
+        arr.forEach((ele, index, array) => {
+          fun(ele, index, array) && res.push(ele)
+        })
+        return res.length === 1 ? res[0] : res
+      } else {
+        console.warn('请传入正确的参数')
+      }
     }
     /**
      * 将类数组对象(arguments || NodeList...)转换成数组。
