@@ -134,14 +134,69 @@
     };
     /**
      * 数组去重
-     * @param  {Array} arr [要去重的数组]
-     * @return {Array}     [去重后的数组]
+     * @param  {Array} arr[必须] [要去重的数组]
+     * @return {Array}          [去重后的数组]
      */
     arr['arrUnique'] = function (arr) {
         var result = arr.filter(function (ele, index) {
             return index === arr.indexOf(ele);
         });
         return result;
+    };
+    /**
+     * 数组扁平化
+     * @param  {Array}  arr[必须]       [要处理的数组]
+     * @param  {Boolean} isShallow     [是否只扁平化一层]
+     * @param  {Boolean} isStrict      [是否剔除非数组元素]
+     * @return {Array}                 [扁平化后的结果，新数组]
+     */
+    arr['flatten'] = function flatten(arr, isShallow, isStrict) {
+        var res = [],
+            isShallow = isShallow || false,
+            isStrict = isStrict || false;
+
+        for (var i = 0; i < arr.length; i++) {
+            if (Array.isArray(arr[i])) {
+                var hasArr = arr[i].some(function (ele) {
+                    return Array.isArray(ele);
+                });
+                // 若当前数组中还有子元素是数组，则递归
+                if (hasArr && !isShallow) {
+                    res = res.concat(flatten(arr[i], isShallow, isStrict));
+                }
+                else {
+                    for (var j = 0; j < arr[i].length; j++) {
+                        res.push(arr[i][j]);
+                    }
+                }
+            }
+            else if (!isStrict) {
+                res.push(arr[i]);
+            }
+        }
+        return res;
+    };
+    /**
+     * 数组取并集
+     * 注：多维数组会递归扁平化后合并，并去重
+     * @param  {Array}  [多个数组，若传入其他类型，则也会被合并]
+     * @return {Array}  [合并后的数组]
+     */
+    arr['union'] = function () {
+        return arr['arrUnique'](arr['flatten'](arguments));
+    };
+    /**
+     * 数组取反集，只取第一个数组中存在并且在之后所有数组中不存在的值
+     * @param  {Array}  [多个数组，第一个数组为参照数组]
+     * @return {Array}  [新数组]
+     */
+    arr['diff'] = function () {
+        var otherArr = arr['arrUnique'](arr['flatten']([].slice.call(arguments).slice(1))),
+            diffArr = arguments[0];
+
+        return diffArr.filter(function (ele) {
+            return otherArr.indexOf(ele) === -1;
+        });
     };
 
 
@@ -381,6 +436,8 @@
         if (typeof res === 'object') {
             for (var i = 1; i < length; i++) {
                 for (var k in arguments[i]) {
+                    // 若当前属性就等于要拓展的对象，则退出，防止循环引用
+                    if (arguments[i][k] === res) continue;
                     res[k] = arguments[i][k];
                 }
             }
@@ -392,7 +449,7 @@
         }
     };
     /**
-     * 对象深度拓展，会递归拓展对象
+     * 对象深度拓展，会递归拓展对象，数组则直接覆盖
      * 注：返回的对象为要拓展对象的同一个引用
      * @param  {Object}         [多个对象，第一个对象为被拓展的对象]
      * @return {Object}         [返回第一个参数]
@@ -404,6 +461,8 @@
             for (var i = 1; i < length; i++) {
                 for (var k in arguments[i]) {
                     var val = arguments[i][k];
+                    // 若当前属性就等于要拓展的对象，则退出，防止循环引用
+                    if (val === res) continue;
                     if (typeof res[k] === 'object' && typeof val === 'object') {
                         deepAssign(res[k], val);
                     }

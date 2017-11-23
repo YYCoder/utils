@@ -54,7 +54,7 @@
         console.log(util['array']['arrUnique'](arr));*/
 
         // 对象拓展
-        var obj = {
+        /*var obj = {
             name: 'yy',
             like: [1, 2, 3],
             a: {
@@ -73,6 +73,34 @@
                 a2: 2
             }
         }));
+        // 测试循环引用
+        console.log(util['object']['deepAssign'](obj, {
+            like: [4, 5, 6],
+            a: obj
+        }));
+        console.log(util['object']['assign'](obj, {
+            like: [4, 5, 6],
+            a: obj
+        }));*/
+
+        // 数组扁平化
+        /*var arr = [1,2,[3,4,5,[6,7,8]]];
+        console.log(util['array']['flatten'](arr));
+        console.log(util['array']['flatten'](arr, true, true));
+        console.log(util['array']['flatten'](arr, false, true));
+        console.log(util['array']['flatten'](arr, true, false));*/
+
+        // 数组取并集
+        /*var a1 = [1, 2, 3, 7, 8];
+        var a2 = [1, 2, 3, 4, 5, 6, [7, 8]];
+        console.log(util['array']['union'](a1, a2));
+        console.log(util['array']['union'](a1, a2, 11, 13, {}));*/
+
+        // 数组取反集
+        var a1 = [1, 2, 3];
+        var a2 = [3, 4, 6];
+        console.log(util['array']['diff'](a1, a2));
+        console.log(util['array']['diff'](a1));
 
     });
     </script>
