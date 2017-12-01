@@ -97,11 +97,69 @@
         console.log(util['array']['union'](a1, a2, 11, 13, {}));*/
 
         // 数组取反集
-        var a1 = [1, 2, 3];
+        /*var a1 = [1, 2, 3];
         var a2 = [3, 4, 6];
         console.log(util['array']['diff'](a1, a2));
-        console.log(util['array']['diff'](a1));
+        console.log(util['array']['diff'](a1));*/
 
+        // 数组比对，递归比对所有值
+        /*var a1 = [NaN, 2, 3, [3, 4]];
+        var a2 = [NaN, 2, 3, [3, 4]];
+        console.log(util['array']['equalArr'](a1, a2));
+        console.log(util['array']['equalArr'](a1, a2, []));*/
+
+        // 对象比对，递归比对所有自有属性
+        /*var o1 = {
+            name: '123',
+            age: 22,
+            // like: [],
+            selfWrap: {}
+        };
+        var o2 = {
+            name: '123',
+            age: 22,
+            // like: [],
+            selfWrap: {}
+        };
+        o1.selfWrap.self = o1;
+        o2.selfWrap.self = o2;
+        // console.log(util['object']['equalObj'](o1, o2));
+        console.log(util['object']['equalObj'](o1, o2));*/
+
+        // 科里化函数
+        /*util['function']['curry'](function (a1, a2, a3) {
+            console.log(a1);
+            console.log(a2);
+            console.log(a3);
+        }, ['a1'])('a2', 'a3');
+        util['function']['curry'](function (b1, b2, b3) {
+            console.log(b1);
+            console.log(b2);
+            console.log(b3);
+        })('b1')('b2')('b3');*/
+
+        // 偏函数（局部应用）
+        var addOne = partial(function (a, b) {
+            console.log(a + b);
+        }, 1);
+        addOne.call({name: 123}, 2);
+
+        // 函数栈组合
+        /*var arrFun = [
+            function (arg, next) {
+                console.log('fun1 first');
+                console.log(arg);
+                next();
+                console.log('fun1 second');
+            },
+            function (arg, next) {
+                console.log('fun2 first');
+                console.log(arg);
+                next();
+                console.log('fun2 second');
+            }
+        ];
+        util['function']['composeFun'](arrFun)('hahaha');*/
     });
     </script>
     <style>
@@ -115,7 +173,7 @@
         display: inline-block;
         margin: 0;
     }
-    body:before {
+    body::before {
         content: '';
         width: 0;
         height: 100%;

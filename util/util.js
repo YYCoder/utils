@@ -63,6 +63,23 @@
             console.warn('请传入正确的参数');
         }
     };
+    /**
+     * 生成唯一id
+     * @return {String}
+     */
+    str['uuid'] = function () {
+        var s = [];
+        var hexDigits = "0123456789abcdef";
+        for (var i = 0; i < 36; i++) {
+        s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+        }
+        s[14] = "4"; // bits 12-15 of the time_hi_and_version field to 0010
+        s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1); // bits 6-7 of the clock_seq_hi_and_reserved to 01
+        s[8] = s[13] = s[18] = s[23] = "-";
+
+        var uuid = s.join("");
+        return uuid;        
+    }
 
 
     // 数组方法
@@ -197,6 +214,38 @@
         return diffArr.filter(function (ele) {
             return otherArr.indexOf(ele) === -1;
         });
+    };
+    /**
+     * 数组比对，递归比对所有值
+     * @param  {Array}    a1 [第一个数组]
+     * @param  {Array}    a2 [第二个数组]
+     * @return {Boolean}     [比对结果]
+     */
+    arr['equalArr'] = function equalArr(a1, a2) {
+        var len1 = a1.length,
+            len2 = a2.length;
+        if (arguments.length > 2) {
+            console.error('Error: 数组比对只能传递两个参数');
+            return;
+        }
+        if (len1 !== len2) return false;
+
+        for (var i = 0; i < a1.length; i++) {
+            if (a1[i] === a2[i]) {
+                continue;
+            }
+            else {
+                if (Array.isArray(a1[i]) && Array.isArray(a2[i])) {
+                    var res = equalArr(a1[i], a2[i]);
+                    if (res) continue;
+                    else return false;
+                }
+                // 排除NaN的情况
+                else if (a1[i] !== a1[i]) continue;
+                else return false;
+            }
+        }
+        return true;
     };
 
 
@@ -386,7 +435,84 @@
         if (typeof milliSeconds !== 'number') console.error('请传入数值类型的参数');
         while (Date.now() < now + milliSeconds);
     };
+    /**
+     * 函数栈组合（参考自koa-compose源码）
+     * @param  {Array}     arr [函数数组]
+     * @return {Function}      [匿名函数，调用即开启调用组合函数，传入的参数会在每个函数中传入]
+     *
+     * 核心思想：
+     * 1. 利用闭包保存函数数组
+     * 2. 返回匿名函数开启调用
+     * 3. 递归调用dispatch，依次调用数组中的函数
+     * 4. dispatch实参（即next函数），是函数组合的关键，在数组中的函数调用后即进入下一个函数
+     */
+    fun['composeFun'] = function (arr) {
+        if (!Array.isArray(arr)) throw new TypeError('Function stack must be an array!')
+        arr.forEach(function (fun) {
+            if (typeof fun !== 'function') throw new TypeError('Function stack must be composed of functions!')
+        })
+        return function (arg) {
+            var index = -1
+            // 开启调用
+            dispatch(0)
+            function dispatch(i) {
+                index = i
+                var fun = arr[index]
+                if (!fun) return
+                return fun(arg, function next() {
+                    // 递归调用dispatch，从而调用数组中下一个函数
+                    dispatch(++i)
+                })
+            }
+        }
+    }
+    /**
+     * 柯里化函数：将多参函数转为单参或少参多调用的函数
+     * @param  {Function}   fn   [参数个数满足要求后执行的函数]
+     * @param  {Any}        args [初始化参数]
+     * @return {Function}        [柯里化函数]
+     *
+     * 核心思想：
+     * 1. 通过闭包保存函数参数，函数参数不满足要求则递归，满足则调用传入的函数
+     */
+    fun['curry'] = function curry(fn, args) {
+        var length = fn.length;
+        args = args || [];
+        if (!Array.isArray(args)) args = [args];
+        return function() {
+            var _args = args.slice(0),
+                arg, i;
 
+            for (i = 0; i < arguments.length; i++) {
+                arg = arguments[i];
+                _args.push(arg);
+            }
+            if (_args.length < length) {
+                return curry.call(this, fn, _args);
+            }
+            else {
+                return fn.apply(this, _args);
+            }
+        }
+    }
+    /**
+     * 偏函数（partial application）：将一个多参函数分两次调用
+     * @param  {Function}   fn [要调用的函数]
+     * @return {Function}      [偏函数]
+     */
+    function partial(fn) {
+        var length = fn.length || 0,
+            args = [].slice.call(arguments, 1);
+        return function () {
+            var _args = args.concat([].slice.call(arguments, 0));
+            if (_args.length === length) {
+                fn.apply(this, _args);
+            }
+            else {
+                console.error('Error: partial函数参数个数不符合要求');
+            }
+        }
+    }
 
 
     // 对象方法
@@ -478,6 +604,61 @@
             return false;
         }
     };
+    /**
+     * 对象深度对比
+     * @param  {Object}     o1  [对象1]
+     * @param  {Object}     o2  [对象2]
+     * @return {Boolean}        [对比结果]
+     */
+    obj['equalObj'] = function equalObj(o1, o2, o1Stack, o2Stack) {
+        o1Stack = o1Stack || [];
+        o2Stack = o2Stack || [];
+        // 利用额外两个参数保存当前比对时o1、o2的参数值，如果它们都是引用自身的话则退出当前比对
+        var length = o1Stack.length;
+        while (length--) {
+            // 如果两个对象引用的都是自身的话，我们就认为它们是相等的，应该只比较非引用自身的其他属性
+            if (o1Stack[length] === o1) {
+                return o2Stack[length] === o2;
+            }
+        }
+        o1Stack.push(o1);
+        o2Stack.push(o2);
+        var k1 = Object.getOwnPropertyNames(o1),
+            k2 = Object.getOwnPropertyNames(o2),
+            len1 = k1.length,
+            len2 = k2.length;
+        if (len1 !== len2) return false;
+
+        for (var i = 0; i < k1.length; i++) {
+            var val1 = o1[k1[i]],
+                val2 = o2[k2[i]];
+            // 若属性名不相等，则直接退出
+            if (k1[i] !== k2[i]) return false;
+            if (val1 === val2) continue;
+            else {
+                if (isObject(val1) && isObject(val2) || Array.isArray(val1) && Array.isArray(val2)) {
+                    var res = equalObj(val1, val2, o1Stack, o2Stack);
+                    if (res) continue;
+                    else return false;
+                }
+                // 若是NaN，则认为是相等的
+                else if (val1 !== val1) continue;
+                else return false;
+            }
+        }
+        o1Stack.pop();
+        o2Stack.pop();
+        return true;
+    }
+
+    /**
+     * 判断是否为Object类型
+     * @param  {any}       arg     [任意类型参数]
+     * @return {Boolean}           [鉴定结果]
+     */
+    function isObject(arg) {
+        return Object.prototype.toString.call(arg).indexOf('Object]') !== -1;
+    }
 
 
 
