@@ -446,7 +446,7 @@
      * 3. 递归调用dispatch，依次调用数组中的函数
      * 4. dispatch实参（即next函数），是函数组合的关键，在数组中的函数调用后即进入下一个函数
      */
-    fun['composeFun'] = function (arr) {
+    fun['composeStack'] = function (arr) {
         if (!Array.isArray(arr)) throw new TypeError('Function stack must be an array!')
         arr.forEach(function (fun) {
             if (typeof fun !== 'function') throw new TypeError('Function stack must be composed of functions!')
@@ -467,13 +467,27 @@
         }
     }
     /**
-     * 柯里化函数：将多参函数转为单参或少参多调用的函数
+     * 函数组合：传入多个函数作为参数，并将每次调用返回的结果传入下一个函数（函数式编程常用工具函数）
+     * @param  {Function} [要按顺序执行的函数]
+     * @return {Function} [组合函数，调用即开始按顺序调用传入的所有函数]
+     */
+    fun['compose'] = function () {
+        var index = 0,
+            funs = arguments
+        return function (arg) {
+            var res = funs[index++].call(this, arg)
+            while (index < funs.length) res = funs[index++].call(this, res)
+            return res
+        }
+    }
+    /**
+     * 柯里化函数：将多参函数转为单参或少参多调用的函数（函数式编程必备工具函数）
      * @param  {Function}   fn   [参数个数满足要求后执行的函数]
      * @param  {Any}        args [初始化参数]
      * @return {Function}        [柯里化函数]
      *
      * 核心思想：
-     * 1. 通过闭包保存函数参数，函数参数不满足要求则递归，满足则调用传入的函数
+     * 1. 通过闭包保存函数参数，函数参数个数不满足要求则递归，满足则调用传入的函数
      */
     fun['curry'] = function curry(fn, args) {
         var length = fn.length;
@@ -500,18 +514,28 @@
      * @param  {Function}   fn [要调用的函数]
      * @return {Function}      [偏函数]
      */
-    function partial(fn) {
+    fun['partial'] = function (fn) {
         var length = fn.length || 0,
             args = [].slice.call(arguments, 1);
         return function () {
             var _args = args.concat([].slice.call(arguments, 0));
             if (_args.length === length) {
-                fn.apply(this, _args);
+                return fn.apply(this, _args);
             }
             else {
                 console.error('Error: partial函数参数个数不符合要求');
             }
         }
+    }
+    /**
+     * 惰性函数见demo
+     *
+     * 核心思想：
+     * 1. 利用闭包保存第一次的执行结果
+     * 2. 修改本函数的引用，只取结果，不再重复执行
+     */
+    function lazyFun() {
+        // body...
     }
 
 
