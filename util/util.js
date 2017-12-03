@@ -63,6 +63,23 @@
             console.warn('请传入正确的参数');
         }
     };
+    /**
+     * 生成唯一id
+     * @return {String}
+     */
+    str['uuid'] = function () {
+        var s = [];
+        var hexDigits = "0123456789abcdef";
+        for (var i = 0; i < 36; i++) {
+        s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+        }
+        s[14] = "4"; // bits 12-15 of the time_hi_and_version field to 0010
+        s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1); // bits 6-7 of the clock_seq_hi_and_reserved to 01
+        s[8] = s[13] = s[18] = s[23] = "-";
+
+        var uuid = s.join("");
+        return uuid;        
+    }
 
 
     // 数组方法
@@ -134,14 +151,101 @@
     };
     /**
      * 数组去重
-     * @param  {Array} arr [要去重的数组]
-     * @return {Array}     [去重后的数组]
+     * @param  {Array} arr[必须] [要去重的数组]
+     * @return {Array}          [去重后的数组]
      */
     arr['arrUnique'] = function (arr) {
         var result = arr.filter(function (ele, index) {
             return index === arr.indexOf(ele);
         });
         return result;
+    };
+    /**
+     * 数组扁平化
+     * @param  {Array}  arr[必须]       [要处理的数组]
+     * @param  {Boolean} isShallow     [是否只扁平化一层]
+     * @param  {Boolean} isStrict      [是否剔除非数组元素]
+     * @return {Array}                 [扁平化后的结果，新数组]
+     */
+    arr['flatten'] = function flatten(arr, isShallow, isStrict) {
+        var res = [],
+            isShallow = isShallow || false,
+            isStrict = isStrict || false;
+
+        for (var i = 0; i < arr.length; i++) {
+            if (Array.isArray(arr[i])) {
+                var hasArr = arr[i].some(function (ele) {
+                    return Array.isArray(ele);
+                });
+                // 若当前数组中还有子元素是数组，则递归
+                if (hasArr && !isShallow) {
+                    res = res.concat(flatten(arr[i], isShallow, isStrict));
+                }
+                else {
+                    for (var j = 0; j < arr[i].length; j++) {
+                        res.push(arr[i][j]);
+                    }
+                }
+            }
+            else if (!isStrict) {
+                res.push(arr[i]);
+            }
+        }
+        return res;
+    };
+    /**
+     * 数组取并集
+     * 注：多维数组会递归扁平化后合并，并去重
+     * @param  {Array}  [多个数组，若传入其他类型，则也会被合并]
+     * @return {Array}  [合并后的数组]
+     */
+    arr['union'] = function () {
+        return arr['arrUnique'](arr['flatten'](arguments));
+    };
+    /**
+     * 数组取反集，只取第一个数组中存在并且在之后所有数组中不存在的值
+     * @param  {Array}  [多个数组，第一个数组为参照数组]
+     * @return {Array}  [新数组]
+     */
+    arr['diff'] = function () {
+        var otherArr = arr['arrUnique'](arr['flatten']([].slice.call(arguments).slice(1))),
+            diffArr = arguments[0];
+
+        return diffArr.filter(function (ele) {
+            return otherArr.indexOf(ele) === -1;
+        });
+    };
+    /**
+     * 数组比对，递归比对所有值
+     * @param  {Array}    a1 [第一个数组]
+     * @param  {Array}    a2 [第二个数组]
+     * @return {Boolean}     [比对结果]
+     */
+    arr['equalArr'] = function equalArr(a1, a2) {
+        var len1 = a1.length,
+            len2 = a2.length;
+        if (arguments.length > 2) {
+            console.error('Error: 数组比对只能传递两个参数');
+            return;
+        }
+        if (len1 !== len2) return false;
+
+        for (var i = 0; i < a1.length; i++) {
+            if (a1[i] === a2[i]) {
+                continue;
+            }
+            else {
+                if (Array.isArray(a1[i]) && Array.isArray(a2[i])) {
+                    var res = equalArr(a1[i], a2[i]);
+                    if (res) continue;
+                    else return false;
+                }
+                // 排除NaN的情况
+                else if (a1[i] !== a1[i]) continue;
+                else return false;
+            }
+        }
+        return true;
     };
 
 
@@ -331,7 +435,108 @@
         if (typeof milliSeconds !== 'number') console.error('请传入数值类型的参数');
         while (Date.now() < now + milliSeconds);
     };
+    /**
+     * 函数栈组合（参考自koa-compose源码）
+     * @param  {Array}     arr [函数数组]
+     * @return {Function}      [匿名函数，调用即开启调用组合函数，传入的参数会在每个函数中传入]
+     *
+     * 核心思想：
+     * 1. 利用闭包保存函数数组
+     * 2. 返回匿名函数开启调用
+     * 3. 递归调用dispatch，依次调用数组中的函数
+     * 4. dispatch实参（即next函数），是函数组合的关键，在数组中的函数调用后即进入下一个函数
+     */
+    fun['composeStack'] = function (arr) {
+        if (!Array.isArray(arr)) throw new TypeError('Function stack must be an array!')
+        arr.forEach(function (fun) {
+            if (typeof fun !== 'function') throw new TypeError('Function stack must be composed of functions!')
+        })
+        return function (arg) {
+            var index = -1
+            // 开启调用
+            dispatch(0)
+            function dispatch(i) {
+                index = i
+                var fun = arr[index]
+                if (!fun) return
+                return fun(arg, function next() {
+                    // 递归调用dispatch，从而调用数组中下一个函数
+                    dispatch(++i)
+                })
+            }
+        }
+    }
+    /**
+     * 函数组合：传入多个函数作为参数，并将每次调用返回的结果传入下一个函数（函数式编程常用工具函数）
+     * @param  {Function} [要按顺序执行的函数]
+     * @return {Function} [组合函数，调用即开始按顺序调用传入的所有函数]
+     */
+    fun['compose'] = function () {
+        var index = 0,
+            funs = arguments
+        return function (arg) {
+            var res = funs[index++].call(this, arg)
+            while (index < funs.length) res = funs[index++].call(this, res)
+            return res
+        }
+    }
+    /**
+     * 柯里化函数：将多参函数转为单参或少参多调用的函数（函数式编程必备工具函数）
+     * @param  {Function}   fn   [参数个数满足要求后执行的函数]
+     * @param  {Any}        args [初始化参数]
+     * @return {Function}        [柯里化函数]
+     *
+     * 核心思想：
+     * 1. 通过闭包保存函数参数，函数参数个数不满足要求则递归，满足则调用传入的函数
+     */
+    fun['curry'] = function curry(fn, args) {
+        var length = fn.length;
+        args = args || [];
+        if (!Array.isArray(args)) args = [args];
+        return function() {
+            var _args = args.slice(0),
+                arg, i;
 
+            for (i = 0; i < arguments.length; i++) {
+                arg = arguments[i];
+                _args.push(arg);
+            }
+            if (_args.length < length) {
+                return curry.call(this, fn, _args);
+            }
+            else {
+                return fn.apply(this, _args);
+            }
+        }
+    }
+    /**
+     * 偏函数（partial application）：将一个多参函数分两次调用
+     * @param  {Function}   fn [要调用的函数]
+     * @return {Function}      [偏函数]
+     */
+    fun['partial'] = function (fn) {
+        var length = fn.length || 0,
+            args = [].slice.call(arguments, 1);
+        return function () {
+            var _args = args.concat([].slice.call(arguments, 0));
+            if (_args.length === length) {
+                return fn.apply(this, _args);
+            }
+            else {
+                console.error('Error: partial函数参数个数不符合要求');
+            }
+        }
+    }
+    /**
+     * 惰性函数见demo
+     *
+     * 核心思想：
+     * 1. 利用闭包保存第一次的执行结果
+     * 2. 修改本函数的引用，只取结果，不再重复执行
+     */
+    function lazyFun() {
+        // body...
+    }
 
 
     // 对象方法
@@ -381,6 +586,8 @@
         if (typeof res === 'object') {
             for (var i = 1; i < length; i++) {
                 for (var k in arguments[i]) {
+                    // 若当前属性就等于要拓展的对象，则退出，防止循环引用
+                    if (arguments[i][k] === res) continue;
                     res[k] = arguments[i][k];
                 }
             }
@@ -392,7 +599,7 @@
         }
     };
     /**
-     * 对象深度拓展，会递归拓展对象
+     * 对象深度拓展，会递归拓展对象，数组则直接覆盖
      * 注：返回的对象为要拓展对象的同一个引用
      * @param  {Object}         [多个对象，第一个对象为被拓展的对象]
      * @return {Object}         [返回第一个参数]
@@ -404,6 +611,8 @@
             for (var i = 1; i < length; i++) {
                 for (var k in arguments[i]) {
                     var val = arguments[i][k];
+                    // 若当前属性就等于要拓展的对象，则退出，防止循环引用
+                    if (val === res) continue;
                     if (typeof res[k] === 'object' && typeof val === 'object') {
                         deepAssign(res[k], val);
                     }
@@ -419,6 +628,61 @@
             return false;
         }
     };
+    /**
+     * 对象深度对比
+     * @param  {Object}     o1  [对象1]
+     * @param  {Object}     o2  [对象2]
+     * @return {Boolean}        [对比结果]
+     */
+    obj['equalObj'] = function equalObj(o1, o2, o1Stack, o2Stack) {
+        o1Stack = o1Stack || [];
+        o2Stack = o2Stack || [];
+        // 利用额外两个参数保存当前比对时o1、o2的参数值，如果它们都是引用自身的话则退出当前比对
+        var length = o1Stack.length;
+        while (length--) {
+            // 如果两个对象引用的都是自身的话，我们就认为它们是相等的，应该只比较非引用自身的其他属性
+            if (o1Stack[length] === o1) {
+                return o2Stack[length] === o2;
+            }
+        }
+        o1Stack.push(o1);
+        o2Stack.push(o2);
+        var k1 = Object.getOwnPropertyNames(o1),
+            k2 = Object.getOwnPropertyNames(o2),
+            len1 = k1.length,
+            len2 = k2.length;
+        if (len1 !== len2) return false;
+
+        for (var i = 0; i < k1.length; i++) {
+            var val1 = o1[k1[i]],
+                val2 = o2[k2[i]];
+            // 若属性名不相等，则直接退出
+            if (k1[i] !== k2[i]) return false;
+            if (val1 === val2) continue;
+            else {
+                if (isObject(val1) && isObject(val2) || Array.isArray(val1) && Array.isArray(val2)) {
+                    var res = equalObj(val1, val2, o1Stack, o2Stack);
+                    if (res) continue;
+                    else return false;
+                }
+                // 若是NaN，则认为是相等的
+                else if (val1 !== val1) continue;
+                else return false;
+            }
+        }
+        o1Stack.pop();
+        o2Stack.pop();
+        return true;
+    }
+
+    /**
+     * 判断是否为Object类型
+     * @param  {any}       arg     [任意类型参数]
+     * @return {Boolean}           [鉴定结果]
+     */
+    function isObject(arg) {
+        return Object.prototype.toString.call(arg).indexOf('Object]') !== -1;
+    }
 
 
 

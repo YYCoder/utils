@@ -18,6 +18,7 @@
             denounceFun(e);
         });*/
 
+
         // 节流函数
         /*var throttleFun = util['function']['throttle'](function (e) {
             console.log(e);
@@ -25,6 +26,7 @@
         }, 500, { leading: false });
         document.getElementsByTagName('h1')[0].addEventListener('mousemove', throttleFun);*/
 
+ 
         // 对象深度克隆
         /*var obj2 = {
             name: '袁野',
@@ -49,12 +51,14 @@
         console.log(newObj);
         console.log(newArr);*/
 
+
         // 数组去重
         /*var arr = [1,3,4,5,1,1,1];
         console.log(util['array']['arrUnique'](arr));*/
 
+
         // 对象拓展
-        var obj = {
+        /*var obj = {
             name: 'yy',
             like: [1, 2, 3],
             a: {
@@ -73,6 +77,226 @@
                 a2: 2
             }
         }));
+        // 测试循环引用
+        console.log(util['object']['deepAssign'](obj, {
+            like: [4, 5, 6],
+            a: obj
+        }));
+        console.log(util['object']['assign'](obj, {
+            like: [4, 5, 6],
+            a: obj
+        }));*/
+
+
+        // 数组扁平化
+        /*var arr = [1,2,[3,4,5,[6,7,8]]];
+        console.log(util['array']['flatten'](arr));
+        console.log(util['array']['flatten'](arr, true, true));
+        console.log(util['array']['flatten'](arr, false, true));
+        console.log(util['array']['flatten'](arr, true, false));*/
+
+
+        // 数组取并集
+        /*var a1 = [1, 2, 3, 7, 8];
+        var a2 = [1, 2, 3, 4, 5, 6, [7, 8]];
+        console.log(util['array']['union'](a1, a2));
+        console.log(util['array']['union'](a1, a2, 11, 13, {}));*/
+
+
+        // 数组取反集
+        /*var a1 = [1, 2, 3];
+        var a2 = [3, 4, 6];
+        console.log(util['array']['diff'](a1, a2));
+        console.log(util['array']['diff'](a1));*/
+
+
+        // 数组比对，递归比对所有值
+        /*var a1 = [NaN, 2, 3, [3, 4]];
+        var a2 = [NaN, 2, 3, [3, 4]];
+        console.log(util['array']['equalArr'](a1, a2));
+        console.log(util['array']['equalArr'](a1, a2, []));*/
+
+
+        // 对象比对，递归比对所有自有属性
+        /*var o1 = {
+            name: '123',
+            age: 22,
+            // like: [],
+            selfWrap: {}
+        };
+        var o2 = {
+            name: '123',
+            age: 22,
+            // like: [],
+            selfWrap: {}
+        };
+        o1.selfWrap.self = o1;
+        o2.selfWrap.self = o2;
+        // console.log(util['object']['equalObj'](o1, o2));
+        console.log(util['object']['equalObj'](o1, o2));*/
+
+
+        // 科里化函数
+        /*util['function']['curry'](function (a1, a2, a3) {
+            console.log(a1);
+            console.log(a2);
+            console.log(a3);
+        }, ['a1'])('a2', 'a3');
+        util['function']['curry'](function (b1, b2, b3) {
+            console.log(b1);
+            console.log(b2);
+            console.log(b3);
+        })('b1')('b2')('b3');*/
+
+
+        // 偏函数（局部应用）
+        /*var addOne = util['function']['partial'](function (a, b) {
+            console.log(a + b);
+        }, 1);
+        addOne.call({name: 123}, 2);
+        // ES6实现简单的局部应用
+        // const partial = (fn, ...args) => (...arguments) => fn.apply(this, [...args, ...arguments])    
+        // 问题：
+        // 1. 不能修改this指向（箭头函数的缺陷）
+        // 2. 严格模式下会报错，无法使用
+        // 3. 没有参数验证，即使调用时参数个数不正确，依然会调用
+        const partial = (fn, ...args) => (...arguments) => fn.apply(this, [...args, ...arguments])
+        const add = partial((a, b) => a + b)
+        const add1 = partial((a, b) => a + b, 1)
+        const add12 = partial((a, b) => a + b, 1, 2)
+        console.log(add(1, 2))
+        console.log(add1(3))
+        console.log(add12())
+        */
+
+
+        // 函数栈组合
+        /*var arrFun = [
+            function (arg, next) {
+                console.log('fun1 first');
+                console.log(arg);
+                next();
+                console.log('fun1 second');
+            },
+            function (arg, next) {
+                console.log('fun2 first');
+                console.log(arg);
+                next();
+                console.log('fun2 second');
+            }
+        ];
+        util['function']['composeStack'](arrFun)('hahaha');*/
+
+
+        // 惰性函数：利用闭包保存首次执行的结果，之后多次调用都可以直接使用上次的结果，并且避免污染外部作用域
+        /*var lazy = function (fun) {
+            var res = fun()
+            lazy = function () {
+                console.log(res)
+            }
+            lazy()
+        }
+        lazy(function () {
+            return Math.random()
+        })
+        lazy()
+        lazy()
+        // 配合立即执行函数，避免了首次的调用
+        var lazyImmediate = (function (fun) {
+            var res = fun()
+            return function () {
+                console.log(res)
+            }
+        })(function () {
+            return Date.now()
+        })
+        lazyImmediate()
+        lazyImmediate()
+        lazyImmediate()
+        lazyImmediate()*/
+
+
+        // 函数组合
+        /*function nameWord(word) {
+            return word.split(' ')
+        }
+        function compName(wordArr) {
+            return wordArr.join('-')
+        }
+        var name = util['function']['compose'](nameWord, compName)
+        console.log(name('hello functional programming'));
+        // 配合curry函数实现复杂操作。只需定义基本操作函数，无需关注数据
+        function filter(fun, arr) {
+            return arr.filter(function (ele) {
+                return fun(ele)
+            })
+        }
+        function sortBy(prop, isDesc, arr) {
+            return arr.sort(function (pre, nex) {
+                return isDesc ? nex[prop] - pre[prop] : pre[prop] - nex[prop]
+            })
+        }
+        var filter = util['function']['curry'](filter)
+        var sortBy = util['function']['curry'](sortBy)
+        // 组合筛选出name为yuanye，并且按降序排序操作
+        var getSortedYuanye = util['function']['compose'](filter(function (ele) {
+            return ele.name === 'yuanye'
+        }), sortBy('age', true))
+        // 只需在最终执行时修改数据，中途操作方法无需修改
+        var arr = [{
+            name: 'yuanye',
+            age: 19
+        }, {
+            name: 'aaa',
+            age: 11
+        }, {
+            name: '123',
+            age: 20
+        }, {
+            name: 'yuanye',
+            age: 22
+        }]
+        console.log(getSortedYuanye(arr))*/
+        // 通过reduce方式实现函数组合
+        /*function compose() {
+            var arr = [].slice.call(arguments, 0)
+            return function (a, b) {
+                var firstRes = arr[0](a, b)
+                return arr.reduce(function (pre, nex, index) {
+                    if (index === 1) pre = firstRes
+                    return nex(pre)
+                })
+            }
+        }
+        function add(a, b) {
+            return a + b
+        }
+        add = util['function']['curry'](add)
+        function time(a, b) {
+            return a * b
+        }
+        var timeCurry = util['function']['curry'](function (a) {
+            // 需要额外传入新参数时，为了不影响原有元函数（time），最好科里化一个新的函数，并传入参数
+            return time(a, 4)
+        })
+        var addTime = compose(add, timeCurry);
+        console.log(addTime(1, 2))*/
+
+
+        // 数组元素乱序
+        /*var arr = [1, 2, 3, 4, 5]
+        // 统计每个值出现的次数
+        var times = [0, 0, 0, 0, 0]
+        for (var i = 0; i < 10e5; i++) {
+            arr.sort(function (p, n) {
+                return Math.random() - 0.5
+            })
+
+            times[arr[4]-1]++
+        }
+        console.log(times)*/
+
+        
 
     });
     </script>
@@ -87,7 +311,7 @@
         display: inline-block;
         margin: 0;
     }
-    body:before {
+    body::before {
         content: '';
         width: 0;
         height: 100%;
