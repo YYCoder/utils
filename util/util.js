@@ -4,22 +4,11 @@
  * @date            2017-02-28
  */
 ;(function(global, factory) {
-    isCMD()
-    ? (getExports(factory()))
+  typeof exports === 'object' && typeof module !== 'undefined'
+    ? (module.exports = factory())
     : typeof define === 'function' && define.amd
       ? define(factory)
       : (global.util = factory())
-  // CMD输出所有方法
-  function getExports(obj) {
-    var ownKeys = Object.keys(obj) || []
-    ownKeys.forEach(function (k) {
-      isCMD() && (module.exports[k] = obj[k])
-    })
-  }
-  // 是否支持CMD
-  function isCMD() {
-    return typeof exports === 'object' && typeof module !== 'undefined'
-  }
 })(this, function() {
   'use strict'
 
@@ -359,7 +348,9 @@
     !hasLeading && (option.leading = true)
     !hasTrailing && (option.trailing = true)
     if (hasTrailing && hasLeading) {
-      console.error('[Error utils]: throttle can not pass two options in same time!')
+      console.error(
+        '[Error utils]: throttle can not pass two options in same time!'
+      )
       return
     }
     return function() {
@@ -418,7 +409,8 @@
    */
   util['sleep'] = function(milliSeconds) {
     var now = Date.now()
-    if (typeof milliSeconds !== 'number') console.error('[Error utils]: sleep please pass Number!')
+    if (typeof milliSeconds !== 'number')
+      console.error('[Error utils]: sleep please pass Number!')
     while (Date.now() < now + milliSeconds);
   }
   /**
@@ -607,7 +599,9 @@
       }
       return res
     } else {
-      console.error('[Error utils]: deepAssign first argument must be an Object!')
+      console.error(
+        '[Error utils]: deepAssign first argument must be an Object!'
+      )
       return false
     }
   }
@@ -667,6 +661,93 @@
    */
   util['isObject'] = function(arg) {
     return Object.prototype.toString.call(arg).indexOf('Object]') !== -1
+  }
+
+  // cookie相关
+  /**
+   * 设置cookie
+   * @param   {String}    name(必须)    [cookie名]
+   * @param   {String}    value(必须)   [cookie值]
+   * @param   {Object}    opt(可选)     [cookie设置项对象]
+   * opt: {
+   *    path:     cookie可用路径，默认为/
+   *    domain:   cookie可用的域，默认为不设置，浏览器会默认为当前域名
+   *    hours:    cookie可存在时间(小时)，默认为SESSION
+   *    secure:   cookie是否只在https协议下传输
+   * }
+   */
+  util['setCookie'] = function(name, value, opt) {
+    var HOURS = 60 * 60 * 1000,
+      newCookie = '',
+      timeSpan
+    if (name && value) {
+      newCookie += name + '=' + encodeURIComponent(value) + ';'
+      if (opt) {
+        opt.hours || opt.hours == 0
+          ? (timeSpan = Date.now() + opt.hours * HOURS)
+          : (timeSpan = Date.now() + 24 * HOURS)
+        newCookie += 'expires=' + new Date(timeSpan).toGMTString() + ';'
+        opt.domain && (newCookie += 'domain=' + opt.domain + ';')
+        newCookie += 'path=' + (opt.path || '/') + ';'
+        opt.secure && (newCookie += 'Secure;')
+      } else {
+        newCookie += 'path=/;'
+      }
+      document.cookie = newCookie
+    } else {
+      console.error('[COOKIE ERROR]: setCookie missing arguments')
+    }
+  }
+  /**
+   * 获取指定名称的cookie值
+   * @param  {String}  name(必须)  [cookie名]
+   * @return {String}
+   */
+  util['getCookie'] = function(name) {
+    var cookie = document.cookie
+    if (cookie.length > 0) {
+      var start = cookie.indexOf(name + '=')
+      if (start !== -1) {
+        var end
+        start = start + name.length + 1
+        end = cookie.indexOf(';', start)
+        return decodeURIComponent(
+          cookie.slice(start, end === -1 ? cookie.length : end)
+        )
+      }
+    }
+    return ''
+  }
+  /**
+   * 删除指定cookie
+   * @param  {String}  name(必须)   [cookie名]
+   * @param  {Object}  opt(可选)    [同setCookie]
+   */
+  util['removeCookie'] = function(name, opt) {
+    util['setCookie'](name, 'clear', {
+      hours: 0,
+      domain: (opt && opt.domain) || '',
+      path: (opt && opt.path) || ''
+    })
+  }
+  /**
+   * 获取所有cookie
+   * @return {Array} [所有的cookie以Object形式返回]
+   */
+  util['getAllCookies'] = function() {
+    var cookiesArr = document.cookie.split(';'),
+      resArr = [],
+      key,
+      val
+    cookiesArr.forEach(function(elem) {
+      key = elem.elem.match(/\s?(.*)=/)[1]
+      val = elem.replace(/.+=/, '')
+      resArr.push({
+        name: key,
+        value: val
+      })
+    })
+    return resArr
   }
 
   return util
