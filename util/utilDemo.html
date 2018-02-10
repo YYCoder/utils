@@ -90,12 +90,10 @@
 
 
         // 数组扁平化
-        /*var arr = [1,2,[3,4,5,[6,7,8]]];
-        console.log(util['flatten'](arr));
-        console.log(util['flatten'](arr, true, true));
-        console.log(util['flatten'](arr, false, true));
-        console.log(util['flatten'](arr, true, false));*/
-
+        /*var arr = [1,2,[3,4,5,[6,7,1,8]]];
+        console.time('util: ')
+        console.log(util['flatten'](arr, false));
+        console.timeEnd('util: ')*/
 
         // 数组取并集
         /*var a1 = [1, 2, 3, 7, 8];
@@ -103,6 +101,10 @@
         console.log(util['union'](a1, a2));
         console.log(util['union'](a1, a2, 11, 13, {}));*/
 
+        // 对象数组排序
+        var arr = [{ age: 22 }, { age: 23 }, { age: 18 }]
+        console.log(util['sortObjs'](arr, 'age'))
+        console.log(arr)
 
         // 数组取反集
         /*var a1 = [1, 2, 3];

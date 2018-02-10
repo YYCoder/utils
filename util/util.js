@@ -98,7 +98,7 @@
       arr.forEach((ele, index, array) => {
         fun(ele, index, array) && res.push(ele)
       })
-      return res.length === 1 ? res[0] : res
+      return res
     } else {
       console.error('[Error utils]: find missing arguments!')
     }
@@ -124,9 +124,10 @@
    * @return {Array}        [排序后的数组]
    */
   util['sortObjs'] = function(arr, key, desc) {
-    var isDesc = desc || false
+    var res = [].concat(arr),
+      isDesc = desc || false
     if (Array.isArray(arr) && key) {
-      return arr.sort(function(ele1, ele2) {
+      return res.sort(function(ele1, ele2) {
         return isDesc ? ele2[key] - ele1[key] : ele1[key] - ele2[key]
       })
     } else {
@@ -148,33 +149,22 @@
    * 数组扁平化
    * @param  {Array}   arr[必须]      [要处理的数组]
    * @param  {Boolean} isShallow     [是否只扁平化一层]
-   * @param  {Boolean} isStrict      [是否剔除非数组元素]
    * @return {Array}                 [扁平化后的结果，新数组]
    */
-  util['flatten'] = function flatten(arr, isShallow, isStrict) {
+  util['flatten'] = function flatten(arr, isShallow) {
     var res = [],
-      isShallow = isShallow || false,
-      isStrict = isStrict || false
-
-    for (var i = 0; i < arr.length; i++) {
-      if (Array.isArray(arr[i])) {
-        var hasArr = arr[i].some(function(ele) {
-          return Array.isArray(ele)
-        })
-        // 若当前数组中还有子元素是数组，则递归
-        if (hasArr && !isShallow) {
-          res = res.concat(flatten(arr[i], isShallow, isStrict))
-        } else {
-          for (var j = 0; j < arr[i].length; j++) {
-            res.push(arr[i][j])
-          }
-        }
-      } else if (!isStrict) {
-        res.push(arr[i])
-      }
+      isShallow = isShallow || false
+    if (Array.isArray(arr)) {
+      arr.forEach(function (ele) {
+        res = res.concat(isShallow ? ele : flatten(ele, false))
+      })
+    }
+    else {
+      res.push(arr)
     }
     return res
   }
+
   /**
    * 数组取并集
    * 注：多维数组会递归扁平化后合并，并去重
@@ -661,93 +651,6 @@
    */
   util['isObject'] = function(arg) {
     return Object.prototype.toString.call(arg).indexOf('Object]') !== -1
-  }
-
-  // cookie相关
-  /**
-   * 设置cookie
-   * @param   {String}    name(必须)    [cookie名]
-   * @param   {String}    value(必须)   [cookie值]
-   * @param   {Object}    opt(可选)     [cookie设置项对象]
-   * opt: {
-   *    path:     cookie可用路径，默认为/
-   *    domain:   cookie可用的域，默认为不设置，浏览器会默认为当前域名
-   *    hours:    cookie可存在时间(小时)，默认为SESSION
-   *    secure:   cookie是否只在https协议下传输
-   * }
-   */
-  util['setCookie'] = function(name, value, opt) {
-    var HOURS = 60 * 60 * 1000,
-      newCookie = '',
-      timeSpan
-    if (name && value) {
-      newCookie += name + '=' + encodeURIComponent(value) + ';'
-      if (opt) {
-        opt.hours || opt.hours == 0
-          ? (timeSpan = Date.now() + opt.hours * HOURS)
-          : (timeSpan = Date.now() + 24 * HOURS)
-        newCookie += 'expires=' + new Date(timeSpan).toGMTString() + ';'
-        opt.domain && (newCookie += 'domain=' + opt.domain + ';')
-        newCookie += 'path=' + (opt.path || '/') + ';'
-        opt.secure && (newCookie += 'Secure;')
-      } else {
-        newCookie += 'path=/;'
-      }
-      document.cookie = newCookie
-    } else {
-      console.error('[COOKIE ERROR]: setCookie missing arguments')
-    }
-  }
-  /**
-   * 获取指定名称的cookie值
-   * @param  {String}  name(必须)  [cookie名]
-   * @return {String}
-   */
-  util['getCookie'] = function(name) {
-    var cookie = document.cookie
-    if (cookie.length > 0) {
-      var start = cookie.indexOf(name + '=')
-      if (start !== -1) {
-        var end
-        start = start + name.length + 1
-        end = cookie.indexOf(';', start)
-        return decodeURIComponent(
-          cookie.slice(start, end === -1 ? cookie.length : end)
-        )
-      }
-    }
-    return ''
-  }
-  /**
-   * 删除指定cookie
-   * @param  {String}  name(必须)   [cookie名]
-   * @param  {Object}  opt(可选)    [同setCookie]
-   */
-  util['removeCookie'] = function(name, opt) {
-    util['setCookie'](name, 'clear', {
-      hours: 0,
-      domain: (opt && opt.domain) || '',
-      path: (opt && opt.path) || ''
-    })
-  }
-  /**
-   * 获取所有cookie
-   * @return {Array} [所有的cookie以Object形式返回]
-   */
-  util['getAllCookies'] = function() {
-    var cookiesArr = document.cookie.split(';'),
-      resArr = [],
-      key,
-      val
-    cookiesArr.forEach(function(elem) {
-      key = elem.elem.match(/\s?(.*)=/)[1]
-      val = elem.replace(/.+=/, '')
-      resArr.push({
-        name: key,
-        value: val
-      })
-    })
-    return resArr
   }
 
   return util
