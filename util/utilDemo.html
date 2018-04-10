@@ -299,6 +299,22 @@
         }
         console.log(times)*/
 
+        // 安全获取对象深层属性
+        var deepObj = {
+            name: 'hahaha',
+            likes: [
+                {
+                    name: 'coding',
+                    detail: {
+                        type: 'work'
+                    }
+                }
+            ]
+        }
+        console.log(util['get'](['likes', '0', 'detail'], deepObj))
+        console.log(util['get'](['likes', '0', 'detail', 'test'], deepObj))
+        console.log(util['get'](['likes', '0', 'detail', 'type', 'hwhwhw'], deepObj))
+
     });
     </script>
     <style>
