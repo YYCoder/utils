@@ -664,6 +664,34 @@
       throw new Error('[util Error]: get function invalid arguments')
     }
   }
+  /**
+   * 向url中添加参数
+   * @param  {String} href     [url字符串]
+   * @param  {String} queryStr [查询参数字符串，如channelFrom=test]
+   * @return {String}          [添加参数后的url字符串]
+   */
+  util['addQuery'] = function(href, queryStr) {
+    var queryArr = href.split('?')
+    var res = ''
+    // 若url中已有参数
+    if (queryArr[1]) {
+      queryArr[1] = '?' + queryStr + '&' + queryArr[1]
+      res = queryArr.join('')
+    }
+    // 若url中没有参数
+    else {
+      var hashArr = queryArr[0].split('#')
+      // 若url中有hash
+      if (hashArr[1]) {
+        res = hashArr[0] + '?' + queryStr + '#' + hashArr[1]
+      }
+      // 若url中无hash
+      else {
+        res = hashArr[0] + '?' + queryStr
+      }
+    }
+    return res
+  }
 
   return util
 })
