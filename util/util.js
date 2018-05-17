@@ -27,7 +27,7 @@
     if (str) {
       return res.replace(new RegExp('^\\' + c + '+|\\' + c + '+$', 'g'), '')
     } else {
-      console.warn('请传入正确的参数')
+      throw new Error('[util Error]: trim function invalid arguments')
     }
   }
   util['trimLeft'] = function(str, char) {
@@ -36,7 +36,7 @@
     if (str) {
       return res.replace(new RegExp('^\\' + c + '+'), '')
     } else {
-      console.warn('请传入正确的参数')
+      throw new Error('[util Error]: trimLeft function invalid arguments')
     }
   }
   util['trimRight'] = function(str, char) {
@@ -45,7 +45,7 @@
     if (str) {
       return res.replace(new RegExp('\\' + c + '+$'), '')
     } else {
-      console.warn('请传入正确的参数')
+      throw new Error('[util Error]: trimRight function invalid arguments')
     }
   }
   /**
@@ -100,7 +100,7 @@
       })
       return res
     } else {
-      console.error('[Error utils]: find missing arguments!')
+      throw new Error('[util Error]: find function missing arguments')
     }
   }
   /**
@@ -131,7 +131,7 @@
         return isDesc ? ele2[key] - ele1[key] : ele1[key] - ele2[key]
       })
     } else {
-      console.error('[Error utils]: sortObjs illegal arguments!')
+      throw new Error('[util Error]: sortObjs function invalid arguments')
     }
   }
   /**
@@ -199,7 +199,7 @@
     var len1 = a1.length,
       len2 = a2.length
     if (arguments.length > 2) {
-      console.error('[Error utils]: equalArr only can pass two arguments!')
+      throw new Error('[util Error]: equalArr only can pass two arguments')
       return
     }
     if (len1 !== len2) return false
@@ -338,9 +338,7 @@
     !hasLeading && (option.leading = true)
     !hasTrailing && (option.trailing = true)
     if (hasTrailing && hasLeading) {
-      console.error(
-        '[Error utils]: throttle can not pass two options in same time!'
-      )
+      throw new Error('[util Error]: throttle can not pass two options in same time')
       return
     }
     return function() {
@@ -400,7 +398,7 @@
   util['sleep'] = function(milliSeconds) {
     var now = Date.now()
     if (typeof milliSeconds !== 'number')
-      console.error('[Error utils]: sleep please pass Number!')
+      throw new Error('[util Error]: sleep function please pass Number')
     while (Date.now() < now + milliSeconds);
   }
   /**
@@ -416,10 +414,10 @@
    */
   util['composeStack'] = function(arr) {
     if (!Array.isArray(arr))
-      throw new TypeError('Function stack must be an array!')
+      throw new Error('[util Error]: composeStack function\'s Function stack must be array')
     arr.forEach(function(fun) {
       if (typeof fun !== 'function')
-        throw new TypeError('Function stack must be composed of functions!')
+        throw new Error('[util Error]: composeStack function\'s Function stack must be composed of functions')
     })
     return function(arg) {
       var index = -1
@@ -492,7 +490,7 @@
       if (_args.length === length) {
         return fn.apply(this, _args)
       } else {
-        console.error('[Error utils]: partial missing arguments!')
+        throw new Error('[util Error]: partial function missing arguments')
       }
     }
   }
@@ -561,7 +559,7 @@
       }
       return res
     } else {
-      console.error('[Error utils]: assign first argument must be an Object!')
+      throw new Error('[util Error]: assign function\'s first argument must be an Object')
       return false
     }
   }
@@ -589,9 +587,7 @@
       }
       return res
     } else {
-      console.error(
-        '[Error utils]: deepAssign first argument must be an Object!'
-      )
+      throw new Error('[util Error]: deepAssign function\'s first argument must be an Object')
       return false
     }
   }
@@ -651,6 +647,50 @@
    */
   util['isObject'] = function(arg) {
     return Object.prototype.toString.call(arg).indexOf('Object]') !== -1
+  }
+  /**
+   * 安全获取对象深层属性
+   * @param  {Array}   props   [要获取的属性列表]
+   * @param  {Object}  obj     [获取属性的对象]
+   * @return {Any}             [获取到的属性值，或null]
+   */
+  util['get'] = function(props, obj) {
+    if (Array.isArray(props) && util['isObject'](obj)) {
+      return props.reduce(function (pre, next) {
+        return (pre && pre[next]) ? pre[next] : null
+      }, obj)
+    }
+    else {
+      throw new Error('[util Error]: get function invalid arguments')
+    }
+  }
+  /**
+   * 向url中添加参数
+   * @param  {String} href     [url字符串]
+   * @param  {String} queryStr [查询参数字符串，如channelFrom=test]
+   * @return {String}          [添加参数后的url字符串]
+   */
+  util['addQuery'] = function(href, queryStr) {
+    var queryArr = href.split('?')
+    var res = ''
+    // 若url中已有参数
+    if (queryArr[1]) {
+      queryArr[1] = '?' + queryStr + '&' + queryArr[1]
+      res = queryArr.join('')
+    }
+    // 若url中没有参数
+    else {
+      var hashArr = queryArr[0].split('#')
+      // 若url中有hash
+      if (hashArr[1]) {
+        res = hashArr[0] + '?' + queryStr + '#' + hashArr[1]
+      }
+      // 若url中无hash
+      else {
+        res = hashArr[0] + '?' + queryStr
+      }
+    }
+    return res
   }
 
   return util
