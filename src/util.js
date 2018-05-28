@@ -12,38 +12,42 @@
 })(this, function() {
   'use strict'
 
-  var util = {}
+  // 构造函数
+  function Util() {
+  }
+  var prototype = Util.prototype
 
   // 字符串方法
   /**
-   * 去除字符串收尾指定字符
+   * 去除字符串首尾指定字符
    * @param  {String} str  [原字符串]
    * @param  {String} char [要去除的字符，默认为空格]
    * @return {String}      [结果字符]
    */
-  util['trim'] = function(str, char) {
+  prototype['trim'] = function(str, char) {
     var res = str,
-      c = char || ' '
+      c = char || ' ',
+      regExp = new RegExp('^(' + c + ')+|(' + c + ')+$', 'g')
     if (str) {
-      return res.replace(new RegExp('^\\' + c + '+|\\' + c + '+$', 'g'), '')
+      return res.replace(regExp, '')
     } else {
       throw new Error('[util Error]: trim function invalid arguments')
     }
   }
-  util['trimLeft'] = function(str, char) {
+  prototype['trimLeft'] = function(str, char) {
     var res = str,
       c = char || ' '
     if (str) {
-      return res.replace(new RegExp('^\\' + c + '+'), '')
+      return res.replace(new RegExp('^(' + c + ')+'), '')
     } else {
       throw new Error('[util Error]: trimLeft function invalid arguments')
     }
   }
-  util['trimRight'] = function(str, char) {
+  prototype['trimRight'] = function(str, char) {
     var res = str,
       c = char || ' '
     if (str) {
-      return res.replace(new RegExp('\\' + c + '+$'), '')
+      return res.replace(new RegExp('(' + c + ')+$'), '')
     } else {
       throw new Error('[util Error]: trimRight function invalid arguments')
     }
@@ -52,7 +56,7 @@
    * 生成唯一id
    * @return {String}
    */
-  util['uuid'] = function() {
+  prototype['uuid'] = function() {
     var s = []
     var hexDigits = '0123456789abcdef'
     for (var i = 0; i < 36; i++) {
@@ -73,7 +77,7 @@
    * @param  {any}   [x]必选   [要查找的元素]
    * @return {Array}            [匹配元素的索引数组]
    */
-  util['findAll'] = function(arr, x) {
+  prototype['findAll'] = function(arr, x) {
     var result = [], //将会返回的索引数组
       len = arr.length, //传入的数组长度
       pos = 0 //开始搜索的位置
@@ -92,7 +96,7 @@
    * @param  {Function} fun [description]
    * @return {any}          [description]
    */
-  util['find'] = function(arr, fun) {
+  prototype['find'] = function(arr, fun) {
     if (Array.isArray(arr) && typeof fun === 'function') {
       var res = []
       arr.forEach((ele, index, array) => {
@@ -110,7 +114,7 @@
    * @param  {Number} end   [数组结束元素是从零开始计算的下标]
    * @return {Array}        [数组]
    */
-  util['objToArray'] = function(obj, start, end) {
+  prototype['objToArray'] = function(obj, start, end) {
     var len = obj.length
     start = start || 0
     end = end || len
@@ -123,7 +127,7 @@
    * @param  {Boolean} desc [是否按降序排列, 默认为false]
    * @return {Array}        [排序后的数组]
    */
-  util['sortObjs'] = function(arr, key, desc) {
+  prototype['sortObjs'] = function(arr, key, desc) {
     var res = [].concat(arr),
       isDesc = desc || false
     if (Array.isArray(arr) && key) {
@@ -139,7 +143,7 @@
    * @param  {Array} arr[必须] [要去重的数组]
    * @return {Array}          [去重后的数组]
    */
-  util['arrUnique'] = function(arr) {
+  prototype['arrUnique'] = function(arr) {
     var result = arr.filter(function(ele, index) {
       return index === arr.indexOf(ele)
     })
@@ -151,7 +155,7 @@
    * @param  {Boolean} isShallow     [是否只扁平化一层]
    * @return {Array}                 [扁平化后的结果，新数组]
    */
-  util['flatten'] = function flatten(arr, isShallow) {
+  prototype['flatten'] = function flatten(arr, isShallow) {
     var res = [],
       isShallow = isShallow || false
     if (Array.isArray(arr)) {
@@ -171,17 +175,17 @@
    * @param  {Array}  [多个数组，若传入其他类型，则也会被合并]
    * @return {Array}  [合并后的数组]
    */
-  util['union'] = function() {
-    return util['arrUnique'](util['flatten'](arguments))
+  prototype['union'] = function() {
+    return prototype['arrUnique'](prototype['flatten'](arguments))
   }
   /**
    * 数组取反集，只取第一个数组中存在并且在之后所有数组中不存在的值
    * @param  {Array}  [多个数组，第一个数组为参照数组]
    * @return {Array}  [新数组]
    */
-  util['diff'] = function() {
-    var otherArr = util['arrUnique'](
-        util['flatten']([].slice.call(arguments).slice(1))
+  prototype['diff'] = function() {
+    var otherArr = prototype['arrUnique'](
+        prototype['flatten']([].slice.call(arguments).slice(1))
       ),
       diffArr = arguments[0]
 
@@ -195,7 +199,7 @@
    * @param  {Array}    a2 [第二个数组]
    * @return {Boolean}     [比对结果]
    */
-  util['equalArr'] = function equalArr(a1, a2) {
+  prototype['equalArr'] = function equalArr(a1, a2) {
     var len1 = a1.length,
       len2 = a2.length
     if (arguments.length > 2) {
@@ -236,7 +240,7 @@
    *                     %T - 当前时间，和 %H:%M:%S 一样;
    * @return {String} [日期字符串]
    */
-  util['dateFormat'] = function(date, format) {
+  prototype['dateFormat'] = function(date, format) {
     var reg = /\%Y|\%y|\%m|\%d|\%w|\%H|\%M|\%S|\%T/g
     var D
     var value
@@ -304,13 +308,13 @@
    * @param  {any}      [any]可选        [传入绑定函数的参数]
    * @return {Function}                 [修改this后的函数]
    */
-  util['bind'] = function(fun, context) {
+  prototype['bind'] = function(fun, context) {
     var argsOut
     var argsIn
     if (arguments.length > 2) {
-      argsOut = util['objToArray'](arguments, 2)
+      argsOut = prototype['objToArray'](arguments, 2)
       return function() {
-        argsIn = arguments.length > 0 ? util['objToArray'](arguments) : []
+        argsIn = arguments.length > 0 ? prototype['objToArray'](arguments) : []
         return fun.apply(context || this, argsOut.concat(argsIn))
       }
     } else {
@@ -326,7 +330,7 @@
    * @param  {Object}     options      [若想禁用第一次执行,传{leading: false}; 若想禁用最后一次,传{trailing: false}]
    * @return {Function}
    */
-  util['throttle'] = function(fun, delay, option) {
+  prototype['throttle'] = function(fun, delay, option) {
     var timeout,
       lastTime = 0,
       timeDelay = delay || 300,
@@ -371,7 +375,7 @@
    * @param  {Boolean}        immediate [第一次是否立即执行]
    * @return {Function}                 [description]
    */
-  util['denounce'] = function(fun, wait, immediate) {
+  prototype['denounce'] = function(fun, wait, immediate) {
     var timeout
     var hasImmediateRun = false
     var result // 调用函数返回值
@@ -395,7 +399,7 @@
    * 阻塞函数
    * @param  {Number}   milliSeconds[必须]    [要阻塞的毫秒数]
    */
-  util['sleep'] = function(milliSeconds) {
+  prototype['sleep'] = function(milliSeconds) {
     var now = Date.now()
     if (typeof milliSeconds !== 'number')
       throw new Error('[util Error]: sleep function please pass Number')
@@ -412,7 +416,7 @@
    * 3. 递归调用dispatch，依次调用数组中的函数
    * 4. dispatch实参（即next函数），是函数组合的关键，在数组中的函数调用后即进入下一个函数
    */
-  util['composeStack'] = function(arr) {
+  prototype['composeStack'] = function(arr) {
     if (!Array.isArray(arr))
       throw new Error('[util Error]: composeStack function\'s Function stack must be array')
     arr.forEach(function(fun) {
@@ -439,7 +443,7 @@
    * @param  {Function} [要按顺序执行的函数]
    * @return {Function} [组合函数，调用即开始按顺序调用传入的所有函数]
    */
-  util['compose'] = function() {
+  prototype['compose'] = function() {
     var index = 0,
       funs = arguments
     return function(arg) {
@@ -457,7 +461,7 @@
    * 核心思想：
    * 1. 通过闭包保存函数参数，函数参数个数不满足要求则递归，满足则调用传入的函数
    */
-  util['curry'] = function curry(fn, args) {
+  prototype['curry'] = function curry(fn, args) {
     var length = fn.length
     args = args || []
     if (!Array.isArray(args)) args = [args]
@@ -482,7 +486,7 @@
    * @param  {Function}   fn [要调用的函数]
    * @return {Function}      [偏函数]
    */
-  util['partial'] = function(fn) {
+  prototype['partial'] = function(fn) {
     var length = fn.length || 0,
       args = [].slice.call(arguments, 1)
     return function() {
@@ -511,7 +515,7 @@
    * @param  {Object}   object[必须]   [要判断的对象]
    * @return {Boolean}                [是否为空对象]
    */
-  util['isEmpty'] = function(object) {
+  prototype['isEmpty'] = function(object) {
     return Object.getOwnPropertyNames(object).length === 0
   }
   /**
@@ -519,7 +523,7 @@
    * @param  {any}    obj[必须]   [要克隆的对象]
    * @return {Object}             [克隆完成的对象]
    */
-  util['deepClone'] = function deepClone(obj) {
+  prototype['deepClone'] = function deepClone(obj) {
     var res
     if (typeof obj !== 'object' || obj === null) {
       return obj
@@ -546,7 +550,7 @@
    * @param  {Object}     [多个对象，第一个为要拓展的对象]
    * @return {Object}     [拓展后的对象]
    */
-  util['assign'] = function assign() {
+  prototype['assign'] = function assign() {
     var length = arguments.length,
       res = arguments[0]
     if (typeof res === 'object') {
@@ -569,7 +573,7 @@
    * @param  {Object}         [多个对象，第一个对象为被拓展的对象]
    * @return {Object}         [返回第一个参数]
    */
-  util['deepAssign'] = function deepAssign() {
+  prototype['deepAssign'] = function deepAssign() {
     var length = arguments.length,
       res = arguments[0]
     if (typeof res === 'object') {
@@ -597,7 +601,7 @@
    * @param  {Object}     o2  [对象2]
    * @return {Boolean}        [对比结果]
    */
-  util['equalObj'] = function equalObj(o1, o2, o1Stack, o2Stack) {
+  prototype['equalObj'] = function equalObj(o1, o2, o1Stack, o2Stack) {
     o1Stack = o1Stack || []
     o2Stack = o2Stack || []
     // 利用额外两个参数保存当前比对时o1、o2的参数值，如果它们都是引用自身的话则退出当前比对
@@ -624,7 +628,7 @@
       if (val1 === val2) continue
       else {
         if (
-          (util['isObject'](val1) && util['isObject'](val2)) ||
+          (prototype['isObject'](val1) && prototype['isObject'](val2)) ||
           (Array.isArray(val1) && Array.isArray(val2))
         ) {
           var res = equalObj(val1, val2, o1Stack, o2Stack)
@@ -645,7 +649,7 @@
    * @param  {any}       arg     [任意类型参数]
    * @return {Boolean}           [鉴定结果]
    */
-  util['isObject'] = function(arg) {
+  prototype['isObject'] = function(arg) {
     return Object.prototype.toString.call(arg).indexOf('Object]') !== -1
   }
   /**
@@ -654,8 +658,8 @@
    * @param  {Object}  obj     [获取属性的对象]
    * @return {Any}             [获取到的属性值，或null]
    */
-  util['get'] = function(props, obj) {
-    if (Array.isArray(props) && util['isObject'](obj)) {
+  prototype['get'] = function(props, obj) {
+    if (Array.isArray(props) && prototype['isObject'](obj)) {
       return props.reduce(function (pre, next) {
         return (pre && pre[next]) ? pre[next] : null
       }, obj)
@@ -670,7 +674,7 @@
    * @param  {String} queryStr [查询参数字符串，如channelFrom=test]
    * @return {String}          [添加参数后的url字符串]
    */
-  util['addQuery'] = function(href, queryStr) {
+  prototype['addQuery'] = function(href, queryStr) {
     var queryArr = href.split('?')
     var res = ''
     // 若url中已有参数
@@ -693,5 +697,5 @@
     return res
   }
 
-  return util
+  return new Util
 })

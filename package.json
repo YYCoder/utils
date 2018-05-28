@@ -2,8 +2,14 @@
   "name": "utils",
   "version": "1.0.0",
   "description": "my utils",
-  "main": "index.js",
+  "main": "src/util.js",
   "repository": "git@github.com:YYCoder/utils.git",
   "author": "Markey",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "mocha": "^5.2.0"
+  },
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha -u bdd"
+  }
 }
