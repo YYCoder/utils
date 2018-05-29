@@ -77,7 +77,7 @@
    * @param  {any}   [x]必选   [要查找的元素]
    * @return {Array}            [匹配元素的索引数组]
    */
-  prototype['findAll'] = function(arr, x) {
+  prototype['findIndex'] = function(arr, x) {
     var result = [], //将会返回的索引数组
       len = arr.length, //传入的数组长度
       pos = 0 //开始搜索的位置
