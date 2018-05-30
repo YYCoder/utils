@@ -77,7 +77,7 @@
    * @param  {any}   [x]必选   [要查找的元素]
    * @return {Array}            [匹配元素的索引数组]
    */
-  prototype['findAll'] = function(arr, x) {
+  prototype['findIndex'] = function(arr, x) {
     var result = [], //将会返回的索引数组
       len = arr.length, //传入的数组长度
       pos = 0 //开始搜索的位置
@@ -99,7 +99,7 @@
   prototype['find'] = function(arr, fun) {
     if (Array.isArray(arr) && typeof fun === 'function') {
       var res = []
-      arr.forEach((ele, index, array) => {
+      arr.forEach(function(ele, index, array) {
         fun(ele, index, array) && res.push(ele)
       })
       return res
@@ -139,13 +139,21 @@
     }
   }
   /**
-   * 数组去重
+   * 数组去重：只能去重原始类型
    * @param  {Array} arr[必须] [要去重的数组]
    * @return {Array}          [去重后的数组]
    */
   prototype['arrUnique'] = function(arr) {
+    // 第一个NaN元素索引
+    var NaNIndex = -1
+    // 过滤普通原始类型（除NaN以外）
     var result = arr.filter(function(ele, index) {
-      return index === arr.indexOf(ele)
+      var isNaN = ele !== ele
+      // 若当前元素是NaN，并且未记录索引，则记录索引（因为只需要保留第一个NaN）
+      if (isNaN && NaNIndex === -1) {
+        NaNIndex = index
+      }
+      return (isNaN && NaNIndex === index) || index === arr.indexOf(ele)
     })
     return result
   }
@@ -168,15 +176,30 @@
     }
     return res
   }
-
   /**
-   * 数组取并集
-   * 注：多维数组会递归扁平化后合并，并去重
+   * 数组取并集：多维数组会递归扁平化后合并
+   * @param  {Object} opt[可选] [配置对象]
+   *                  isUnique  {Boolean} [是否去重，默认为true]
+   *                  isFlatten {Boolean} [是否递归扁平化，默认为true]
    * @param  {Array}  [多个数组，若传入其他类型，则也会被合并]
    * @return {Array}  [合并后的数组]
    */
-  prototype['union'] = function() {
-    return prototype['arrUnique'](prototype['flatten'](arguments))
+  prototype['union'] = function(opt) {
+    var isUnique = true,
+      isFlatten = true,
+      argsArr = prototype['objToArray'](arguments)
+    var resArr
+    // 判断参数
+    if (prototype['isObject'](opt)) {
+      prototype['isBoolean'](opt.unique) && (isUnique = opt.unique)
+      prototype['isBoolean'](opt.flatten) && (isFlatten = opt.flatten)
+      argsArr = argsArr.slice(1)
+    }
+    resArr = prototype['flatten'](argsArr, !isFlatten)
+    if (isUnique) {
+      resArr = prototype['arrUnique'](resArr)
+    }
+    return resArr
   }
   /**
    * 数组取反集，只取第一个数组中存在并且在之后所有数组中不存在的值
@@ -668,6 +691,8 @@
       throw new Error('[util Error]: get function invalid arguments')
     }
   }
+
+  // 其他
   /**
    * 向url中添加参数
    * @param  {String} href     [url字符串]
@@ -695,6 +720,9 @@
       }
     }
     return res
+  }
+  prototype['isBoolean'] = function(arg) {
+    return typeof arg === 'boolean'
   }
 
   return new Util

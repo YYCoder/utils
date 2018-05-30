@@ -7,9 +7,11 @@
   "author": "Markey",
   "license": "MIT",
   "devDependencies": {
-    "mocha": "^5.2.0"
+    "mocha": "^5.2.0",
+    "nyc": "^11.8.0",
+    "power-assert": "^1.5.0"
   },
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha -u bdd"
+    "test": "nyc ./node_modules/mocha/bin/mocha -u bdd"
   }
 }
