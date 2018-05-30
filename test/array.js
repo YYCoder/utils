@@ -4,7 +4,9 @@ const {
   find,
   objToArray,
   sortObjs,
-  arrUnique
+  arrUnique,
+  flatten,
+  union
 } = require('../src/util')
 
 function deepEq(actual, value, message) {
@@ -102,10 +104,43 @@ describe('数组方法：', () => {
     it('数组去重，应返回[123, "name", null, undefined]', () => {
       deepEq([123, 'name', null, undefined], arrUnique(rawArr))
     })
-    // console.log(deepEq(NaN, NaN))
     it('包含NaN数组，应返回[NaN, 123]', () => {
-      deepEq([NaN, 123], arrUnique(rawNaNArr))
-    })    
+      const res = arrUnique(rawNaNArr)
+      assert(isNaN(res[0]) || res[1] === 123)
+    })
+  })
+
+  describe('flatten: ', () => {
+    const rawArr = [[123, 456], [123, 456, [789]], 123]
+
+    it('默认完全扁平化', () => {
+      deepEq([123, 456, 123, 456, 789, 123], flatten(rawArr))
+    })
+    it('只扁平化一层', () => {
+      deepEq([123, 456, 123, 456, [789], 123], flatten(rawArr, true))
+    })
+  })
+
+  describe('union: ', () => {
+    const arr1 = [123, 456, [123, 456], 678]
+    const arr2 = [1, 2, 3, [4, 5, 6, [7, 8]]]
+    const arr3 = ['haha', 'haha']
+
+    it('两数组默认扁平化并去重', () => {
+      deepEq([ 123, 456, 678, 1, 2, 3, 4, 5, 6, 7, 8 ], union(arr1, arr2))
+    })
+    it('三数组默认扁平化并去重', () => {
+      deepEq([ 123, 456, 678, 1, 2, 3, 4, 5, 6, 7, 8, 'haha' ], union(arr1, arr2, arr3))
+    })
+    it('三数组不去重，只扁平化', () => {
+      deepEq([ 123, 456, 123, 456, 678, 1, 2, 3, 4, 5, 6, 7, 8, 'haha', 'haha' ], union({unique: false}, arr1, arr2, arr3))
+    })
+    it('三数组只去重，不扁平化', () => {
+      deepEq([ 123, 456, [ 123, 456 ], 678, 1, 2, 3, [ 4, 5, 6, [ 7, 8 ] ], 'haha' ], union({unique: true, flatten: false}, arr1, arr2, arr3))
+    })
+    it('传入非数组元素，也会被合并', () => {
+      deepEq(['123', 123, 456, 678], union('123', arr1))
+    })
   })
 
 })

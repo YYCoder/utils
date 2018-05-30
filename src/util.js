@@ -177,13 +177,29 @@
     return res
   }
   /**
-   * 数组取并集
-   * 注：多维数组会递归扁平化后合并，并去重
+   * 数组取并集：多维数组会递归扁平化后合并
+   * @param  {Object} opt[可选] [配置对象]
+   *                  isUnique  {Boolean} [是否去重，默认为true]
+   *                  isFlatten {Boolean} [是否递归扁平化，默认为true]
    * @param  {Array}  [多个数组，若传入其他类型，则也会被合并]
    * @return {Array}  [合并后的数组]
    */
-  prototype['union'] = function() {
-    return prototype['arrUnique'](prototype['flatten'](arguments))
+  prototype['union'] = function(opt) {
+    var isUnique = true,
+      isFlatten = true,
+      argsArr = prototype['objToArray'](arguments)
+    var resArr
+    // 判断参数
+    if (prototype['isObject'](opt)) {
+      prototype['isBoolean'](opt.unique) && (isUnique = opt.unique)
+      prototype['isBoolean'](opt.flatten) && (isFlatten = opt.flatten)
+      argsArr = argsArr.slice(1)
+    }
+    resArr = prototype['flatten'](argsArr, !isFlatten)
+    if (isUnique) {
+      resArr = prototype['arrUnique'](resArr)
+    }
+    return resArr
   }
   /**
    * 数组取反集，只取第一个数组中存在并且在之后所有数组中不存在的值
@@ -675,6 +691,8 @@
       throw new Error('[util Error]: get function invalid arguments')
     }
   }
+
+  // 其他
   /**
    * 向url中添加参数
    * @param  {String} href     [url字符串]
@@ -702,6 +720,9 @@
       }
     }
     return res
+  }
+  prototype['isBoolean'] = function(arg) {
+    return typeof arg === 'boolean'
   }
 
   return new Util
