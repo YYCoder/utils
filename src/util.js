@@ -99,7 +99,7 @@
   prototype['find'] = function(arr, fun) {
     if (Array.isArray(arr) && typeof fun === 'function') {
       var res = []
-      arr.forEach((ele, index, array) => {
+      arr.forEach(function(ele, index, array) {
         fun(ele, index, array) && res.push(ele)
       })
       return res
@@ -139,13 +139,21 @@
     }
   }
   /**
-   * 数组去重
+   * 数组去重：只能去重原始类型
    * @param  {Array} arr[必须] [要去重的数组]
    * @return {Array}          [去重后的数组]
    */
   prototype['arrUnique'] = function(arr) {
+    // 第一个NaN元素索引
+    var NaNIndex = -1
+    // 过滤普通原始类型（除NaN以外）
     var result = arr.filter(function(ele, index) {
-      return index === arr.indexOf(ele)
+      var isNaN = ele !== ele
+      // 若当前元素是NaN，并且未记录索引，则记录索引（因为只需要保留第一个NaN）
+      if (isNaN && NaNIndex === -1) {
+        NaNIndex = index
+      }
+      return (isNaN && NaNIndex === index) || index === arr.indexOf(ele)
     })
     return result
   }
@@ -168,7 +176,6 @@
     }
     return res
   }
-
   /**
    * 数组取并集
    * 注：多维数组会递归扁平化后合并，并去重

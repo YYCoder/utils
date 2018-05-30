@@ -1,8 +1,10 @@
-const assert = require('assert')
+const assert = require('power-assert')
 const {
   findIndex,
   find,
-  objToArray
+  objToArray,
+  sortObjs,
+  arrUnique
 } = require('../src/util')
 
 function deepEq(actual, value, message) {
@@ -78,5 +80,49 @@ describe('数组方法：', () => {
     })
   })
 
+  describe('sortObjs: ', () => {
+    const objArr = [
+      { age: 1 },
+      { age: 3 },
+      { age: 2 }
+    ]
+
+    it('排序对象数组，默认升序', () => {
+      deepEq([{age: 1}, {age: 2}, {age: 3}], sortObjs(objArr, 'age'))
+    })
+    it('排序对象数组，降序', () => {
+      deepEq([{age: 3}, {age: 2}, {age: 1}], sortObjs(objArr, 'age', true))
+    })
+  })
+
+  describe('arrUnique: ', () => {
+    const rawArr = [123, 123, 123, 'name', 'name', null, null, undefined, undefined]
+    const rawNaNArr = [NaN, 123, NaN, 123]
+
+    it('数组去重，应返回[123, "name", null, undefined]', () => {
+      deepEq([123, 'name', null, undefined], arrUnique(rawArr))
+    })
+    // console.log(deepEq(NaN, NaN))
+    it('包含NaN数组，应返回[NaN, 123]', () => {
+      deepEq([NaN, 123], arrUnique(rawNaNArr))
+    })    
+  })
 
 })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
