@@ -6,7 +6,8 @@ const {
   sortObjs,
   arrUnique,
   flatten,
-  union
+  union,
+  diff
 } = require('../src/util')
 
 function deepEq(actual, value, message) {
@@ -141,6 +142,12 @@ describe('数组方法：', () => {
     it('传入非数组元素，也会被合并', () => {
       deepEq(['123', 123, 456, 678], union('123', arr1))
     })
+  })
+
+  describe('diff: ', () => {
+    const arr1 = [1, 3, 5, 4, 3]
+    const arr2 = [2, 4, 6]
+    console.log(diff(arr1, arr2))
   })
 
 })
