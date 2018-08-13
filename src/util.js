@@ -251,7 +251,7 @@
   // 日期方法
   /*
    * 时间格式转换
-   * @param    {String||Number} [date][必选] [时间戳(数值)||日期格式字符串(如2017-10-05 13:04:55)]
+   * @param    {String||Number} [dateArg][必选] [时间戳（数值）]
    * @param    {String} [format](可选)  [想要输出的时间格式(如 %Y-%m-%d)]
    * 注: format可识别参数: %Y - 包括世纪数的十进制年份;
    *                     %m - 十进制月份（范围从 01 到 12）;
@@ -263,77 +263,76 @@
    *                     %T - 当前时间，和 %H:%M:%S 一样;
    * @return {String} [日期字符串]
    */
-  prototype['dateFormat'] = function(date, format) {
-    var reg = /\%Y|\%y|\%m|\%d|\%w|\%H|\%M|\%S|\%T/g
-    var D
-    var value
-    var alter = ''
-    var circle
+  prototype['dateFormat'] = function(dateArg, format) {
+    var reg = /\%Y|\%y|\%m|\%d|\%w|\%H|\%M|\%S|\%T/g,
+      D,
+      value,
+      alter = '',
+      circle,
+      date = dateArg || Date.now()
     function zeroFill(str) {
       str += ''
       str.length === 1 && (str = '0' + str)
       return str
     }
-    if (date) {
-      D = new Date(+date)
-      value = format = format || '%Y-%m-%d %H:%M:%S'
-      if (D.toString() !== 'Invalid Date') {
-        circle = reg.exec(format)
-        while (circle) {
-          switch (circle[0]) {
-            case '%Y':
-              alter = D.getFullYear()
-              break
-            case '%m':
-              alter = zeroFill(D.getMonth() + 1)
-              break
-            case '%d':
-              alter = D.getDate()
-              break
-            case '%w':
-              alter = D.getDay()
-              break
-            case '%H':
-              alter = zeroFill(D.getHours())
-              break
-            case '%M':
-              alter = zeroFill(D.getMinutes())
-              break
-            case '%S':
-              alter = zeroFill(D.getSeconds())
-              break
-            case '%T':
-              alter =
-                zeroFill(D.getHours()) +
-                ':' +
-                zeroFill(D.getMinutes()) +
-                ':' +
-                zeroFill(D.getSeconds())
-              break
-          }
-          value = value.replace(circle[0], alter)
-          circle = reg.exec(value)
+
+    D = new Date(+date)
+    value = format = format || '%Y-%m-%d %H:%M:%S'
+    if (D.toString() !== 'Invalid Date') {
+      circle = reg.exec(format)
+      while (circle) {
+        switch (circle[0]) {
+          case '%Y':
+            alter = D.getFullYear()
+            break
+          case '%m':
+            alter = zeroFill(D.getMonth() + 1)
+            break
+          case '%d':
+            alter = D.getDate()
+            break
+          case '%w':
+            alter = D.getDay()
+            break
+          case '%H':
+            alter = zeroFill(D.getHours())
+            break
+          case '%M':
+            alter = zeroFill(D.getMinutes())
+            break
+          case '%S':
+            alter = zeroFill(D.getSeconds())
+            break
+          case '%T':
+            alter =
+              zeroFill(D.getHours()) +
+              ':' +
+              zeroFill(D.getMinutes()) +
+              ':' +
+              zeroFill(D.getSeconds())
+            break
         }
-        return value
-      } else {
-        return 'Invalid Date'
+        value = value.replace(circle[0], alter)
+        circle = reg.exec(value)
       }
+      return value
     } else {
-      return false
+      return 'Invalid Date'
     }
   }
 
   // 函数方法
   /**
-   * 效果类似ES5的bind方法,即修改函数内部的this指向,并在需要调用的时候才调用
-   * @param  {Function} [handle][必须]   [要绑定的函数]
-   * @param  {any}      [context][必须]  [要修改的this]
-   * @param  {any}      [any]可选        [传入绑定函数的参数]
-   * @return {Function}                 [修改this后的函数]
+   * 效果类似ES5的bind方法，即修改函数内部的this指向，并在需要调用的时候才调用
+   * @param  {Function} [fun][必须]  [要绑定的函数]
+   * @param  {any}      [context]可选  [要修改的this]
+   * @param  {any}      [any]可选  [传入绑定函数的参数]
+   * @return {Function}           [修改this后的函数]
    */
   prototype['bind'] = function(fun, context) {
     var argsOut
     var argsIn
+    if (typeof fun !== 'function') throw new Error('[util Error]: bind missing first argument')
     if (arguments.length > 2) {
       argsOut = prototype['objToArray'](arguments, 2)
       return function() {
@@ -347,7 +346,7 @@
     }
   }
   /**
-   * 节流函数
+   * 节流函数：间隔指定时间执行一次
    * @param  {Function}   func[必须]    [要调用的函数]
    * @param  {Number}     wait[必须]    [间隔毫秒数]
    * @param  {Object}     options      [若想禁用第一次执行,传{leading: false}; 若想禁用最后一次,传{trailing: false}]
@@ -364,10 +363,9 @@
     // 默认既执行第一次，也执行最后一次
     !hasLeading && (option.leading = true)
     !hasTrailing && (option.trailing = true)
-    if (hasTrailing && hasLeading) {
-      throw new Error('[util Error]: throttle can not pass two options in same time')
-      return
-    }
+    if (typeof fun !== 'function') throw new Error('[util Error]: throttle missing first argument')
+    if (typeof +delay !== 'number') throw new Error('[util Error]: throttle missing second argument')
+    if (hasTrailing && hasLeading) throw new Error('[util Error]: throttle can not pass two options in the same time')
     return function() {
       var args = arguments,
         context = this

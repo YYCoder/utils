@@ -7,7 +7,8 @@ const {
   arrUnique,
   flatten,
   union,
-  diff
+  diff,
+  equalArr
 } = require('../src/util')
 
 function deepEq(actual, value, message) {
@@ -147,7 +148,52 @@ describe('数组方法：', () => {
   describe('diff: ', () => {
     const arr1 = [1, 3, 5, 4, 3]
     const arr2 = [2, 4, 6]
-    console.log(diff(arr1, arr2))
+    const arr3 = ['yy', 'haha']
+    const arr4 = ['hehe', 'haha']
+    const arr5 = [true, false, { name: 123 }, 123, null]
+    const arr6 = [true, { name: 123 }, 123, null]
+    const arr7 = [NaN]
+    const arr8 = [NaN]
+
+    it('比较数值数组，应返回[1, 3, 5, 3]', () => {
+      deepEq(diff(arr1, arr2), [1, 3, 5, 3])
+    })
+    it(`比较字符串数组，应返回['yy']`, () => {
+      deepEq(diff(arr3, arr4), ['yy'])
+    })
+    it('比较混合数组，应返回[false, { name: 123 }]', () => {
+      deepEq(diff(arr5, arr6), [false, { name: 123 }])
+    })
+    it('NaN无法比较，应返回[NaN]', () => {
+      const diffArr = diff(arr7, arr8)
+      assert.ok(
+        diffArr.length === 1 && diffArr.every(ele => Object.is(ele, NaN))
+      )
+    })
+  })
+
+  describe('equalArr', () => {
+    const arr1 = [1, '123', 'haha', true, null]
+    const arr2 = [1, '123', 'haha', true, null]
+    const arr3 = [NaN]
+    const arr4 = [NaN]
+    const arr5 = [[1, 2, 3], false]
+    const arr6 = [[1, 2, 3], false]
+    const arr7 = [[1, 2, 3], { name: 123 }]
+    const arr8 = [[1, 2, 3], { name: 123 }]
+
+    it('比较普通一维数组，应返回true', () => {
+      assert.ok(equalArr(arr1, arr2))
+    })
+    it('能够比对NaN，应返回true', () => {
+      assert.ok(equalArr(arr3, arr4))
+    })
+    it('比较二维数组，应返回true', () => {
+      assert.ok(equalArr(arr5, arr6))
+    })
+    it('无法比较包含对象的二维数组，应返回false', () => {
+      assert.ok(!equalArr(arr7, arr8))
+    })
   })
 
 })
