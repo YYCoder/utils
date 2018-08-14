@@ -346,10 +346,15 @@
     }
   }
   /**
-   * 节流函数：间隔指定时间执行一次
+   * 节流函数：间隔指定时间执行一次，还可配置是否立即执行第一次调用，以及延迟最后一次调用
+   * 
+   * 注：
+   *   1. 默认既执行第一次，也延迟执行最后一次；
+   *   2. 不能两种方式同时设置为false，underscore中也同样存在这个问题
+   * 
    * @param  {Function}   func[必须]    [要调用的函数]
    * @param  {Number}     wait[必须]    [间隔毫秒数]
-   * @param  {Object}     options      [若想禁用第一次执行,传{leading: false}; 若想禁用最后一次,传{trailing: false}]
+   * @param  {Object}     options      [若想禁用第一次执行，传{leading: false}；若想禁用最后一次，传{trailing: false}]
    * @return {Function}
    */
   prototype['throttle'] = function(fun, delay, option) {
