@@ -694,6 +694,20 @@
       throw new Error('[util Error]: get function invalid arguments')
     }
   }
+  /**
+   * 将对象的键值对调换：对于这个操作，必须确保 obj 里所有的值都是唯一的且可以序列成字符串。
+   * @param  {Object} obj [要invert的对象]
+   * @return {Object}     [新对象]
+   */
+  prototype['invert'] = function(obj) {
+    var newObj = {}
+    if (!prototype['isObject'](obj)) throw new Error('[util Error]: invert first argument must be Object')
+    Object.keys(obj).forEach(key => {
+      var newKey = obj[key]
+      newObj[newKey] = key
+    })
+    return newObj
+  }
 
   // 其他
   /**
@@ -723,6 +737,14 @@
       }
     }
     return res
+  }
+  /**
+   * 获取pathname中每个路径的名称
+   * @param  {String} pathname [路由路径]
+   * @return {Array}          [每个路径名称数组]
+   */
+  prototype['getPaths'] = function(pathname) {
+    return pathname.split('/').slice(1)
   }
   prototype['isBoolean'] = function(arg) {
     return typeof arg === 'boolean'
