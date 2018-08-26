@@ -3,15 +3,14 @@ const {
   bind,
   throttle,
   denounce,
-  sleep
+  sleep,
+  composeStack
 } = require('../src/util')
 
 function deepEq(actual, value, message) {
   assert.deepStrictEqual(actual, value, message)
 }
-function fail(message) {
-  assert.fail(message)
-}
+
 // 通过死循环模拟持续调用，通过count统计调用次数，从而确认是否正常节流
 function testThrottle(number, timeout, done, options = {}) {
   const start = Date.now()
@@ -109,12 +108,61 @@ describe('函数方法：', () => {
   })
 
   describe('sleep: ', () => {
-
-    it('默认不传options对象，则首次也调用，最后也调用', (done) => {
+    it('阻塞1秒', (done) => {
+      const start = Date.now()
+      setTimeout(() => {
+        sleep(1000)
+        const end = Date.now()
+        assert.ok(end - start >= 1000, '阻塞无效')
+        done()
+      })
     })
-
   })
 
+  describe('composeStack: ', () => {
+    const resArr1 = []
+    const funArr1 = [
+      (next) => {
+        resArr1.push('first begin')
+        next()
+        resArr1.push('first end')
+      },
+      (next) => {
+        resArr1.push('second begin')
+        next()
+        resArr1.push('second end')
+      }
+    ]
+    const resArr2 = []
+    const funArr2 = [
+      (next, arg) => {
+        resArr2.push('first begin')
+        resArr2.push(arg)
+        next()
+        resArr2.push('first end')
+      },
+      (next, arg) => {
+        resArr2.push('second begin')
+        resArr2.push(arg)
+        next()
+        resArr2.push('second end')
+      }
+    ]
+
+    it('koa-compose组合函数，基本使用', () => {
+      composeStack(funArr1)()
+      deepEq(resArr1, ['first begin', 'second begin', 'second end', 'first end'])
+    })
+    it('koa-compose组合函数，传入参数，参数会在多个函数中传递', () => {
+      composeStack(funArr2)('test')
+      deepEq(resArr2, ['first begin', 'test', 'second begin', 'test', 'second end', 'first end'])
+    })
+  })
+
+
+  describe('compose: ', () => {
+    
+  })
 
 })
 

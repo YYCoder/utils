@@ -433,6 +433,7 @@
   /**
    * 函数栈组合（参考自koa-compose源码）
    * @param  {Array}     arr [函数数组]
+   *         {Function}      [函数数组中的每个函数，第一个参数是next函数，调用后即会进入下一个函数；第二个参数是函数调用时的初始参数]
    * @return {Function}      [匿名函数，调用即开启调用组合函数，传入的参数会在每个函数中传入]
    *
    * 核心思想：
@@ -450,17 +451,17 @@
     })
     return function(arg) {
       var index = -1
-      // 开启调用
-      dispatch(0)
       function dispatch(i) {
         index = i
         var fun = arr[index]
         if (!fun) return
-        return fun(arg, function next() {
+        return fun(function next() {
           // 递归调用dispatch，从而调用数组中下一个函数
           dispatch(++i)
-        })
+        }, arg)
       }
+      // 开启调用
+      return dispatch(0)
     }
   }
   /**
