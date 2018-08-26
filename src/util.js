@@ -72,7 +72,7 @@
 
   // 数组方法
   /**
-   * 查找数组中所有与指定值相等(strict equality)的元素的索引
+   * 查找数组中所有与指定值相等（strict equality）的元素的索引
    * @param  {Array} [arr]必选 [被查找的数组]
    * @param  {any}   [x]必选   [要查找的元素]
    * @return {Array}            [匹配元素的索引数组]
@@ -163,9 +163,9 @@
    * @param  {Boolean} isShallow     [是否只扁平化一层]
    * @return {Array}                 [扁平化后的结果，新数组]
    */
-  prototype['flatten'] = function flatten(arr, isShallow) {
+  prototype['flatten'] = function flatten(arr, shallow) {
     var res = [],
-      isShallow = isShallow || false
+      isShallow = shallow || false
     if (Array.isArray(arr)) {
       arr.forEach(function (ele) {
         res = res.concat(isShallow ? ele : flatten(ele, false))
@@ -227,7 +227,6 @@
       len2 = a2.length
     if (arguments.length > 2) {
       throw new Error('[util Error]: equalArr only can pass two arguments')
-      return
     }
     if (len1 !== len2) return false
 
@@ -264,7 +263,7 @@
    * @return {String} [日期字符串]
    */
   prototype['dateFormat'] = function(dateArg, format) {
-    var reg = /\%Y|\%y|\%m|\%d|\%w|\%H|\%M|\%S|\%T/g,
+    var reg = /%Y|%y|%m|%d|%w|%H|%M|%S|%T/g,
       D,
       value,
       alter = '',
@@ -346,17 +345,22 @@
     }
   }
   /**
-   * 节流函数：间隔指定时间执行一次
+   * 节流函数：间隔指定时间执行一次，还可配置是否立即执行第一次调用，以及延迟最后一次调用
+   * 
+   * 注：
+   *   1. 默认既执行第一次，也延迟执行最后一次；
+   *   2. 不能两种方式同时设置为false，underscore中也同样存在这个问题
+   * 
    * @param  {Function}   func[必须]    [要调用的函数]
    * @param  {Number}     wait[必须]    [间隔毫秒数]
-   * @param  {Object}     options      [若想禁用第一次执行,传{leading: false}; 若想禁用最后一次,传{trailing: false}]
+   * @param  {Object}     options      [若想禁用第一次执行，传{leading: false}；若想禁用最后一次，传{trailing: false}]
    * @return {Function}
    */
-  prototype['throttle'] = function(fun, delay, option) {
+  prototype['throttle'] = function(fun, delay, opt) {
     var timeout,
       lastTime = 0,
       timeDelay = delay || 300,
-      option = option || {},
+      option = opt || {},
       hasLeading = option.hasOwnProperty('leading'),
       hasTrailing = option.hasOwnProperty('trailing'),
       result
@@ -519,16 +523,6 @@
       }
     }
   }
-  /**
-   * 惰性函数见demo
-   *
-   * 核心思想：
-   * 1. 利用闭包保存第一次的执行结果
-   * 2. 修改本函数的引用，只取结果，不再重复执行
-   */
-  function lazyFun() {
-    // body...
-  }
 
   // 对象方法
   /**
@@ -585,7 +579,6 @@
       return res
     } else {
       throw new Error('[util Error]: assign function\'s first argument must be an Object')
-      return false
     }
   }
   /**
@@ -613,7 +606,6 @@
       return res
     } else {
       throw new Error('[util Error]: deepAssign function\'s first argument must be an Object')
-      return false
     }
   }
   /**
@@ -689,6 +681,20 @@
       throw new Error('[util Error]: get function invalid arguments')
     }
   }
+  /**
+   * 将对象的键值对调换：对于这个操作，必须确保 obj 里所有的值都是唯一的且可以序列成字符串。
+   * @param  {Object} obj [要invert的对象]
+   * @return {Object}     [新对象]
+   */
+  prototype['invert'] = function(obj) {
+    var newObj = {}
+    if (!prototype['isObject'](obj)) throw new Error('[util Error]: invert first argument must be Object')
+    Object.keys(obj).forEach(key => {
+      var newKey = obj[key]
+      newObj[newKey] = key
+    })
+    return newObj
+  }
 
   // 其他
   /**
@@ -718,6 +724,14 @@
       }
     }
     return res
+  }
+  /**
+   * 获取pathname中每个路径的名称
+   * @param  {String} pathname [路由路径]
+   * @return {Array}          [每个路径名称数组]
+   */
+  prototype['getPaths'] = function(pathname) {
+    return pathname.split('/').slice(1)
   }
   prototype['isBoolean'] = function(arg) {
     return typeof arg === 'boolean'
