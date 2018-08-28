@@ -8,14 +8,14 @@
     ? (module.exports = factory())
     : typeof define === 'function' && define.amd
       ? define(factory)
-      : (global.util = factory())
+      : (global.utils = factory())
 })(this, function() {
   'use strict'
 
   // 构造函数
-  function Util() {
+  function Utils() {
   }
-  var prototype = Util.prototype
+  var prototype = Utils.prototype
 
   // 字符串方法
   /**
@@ -31,7 +31,7 @@
     if (str) {
       return res.replace(regExp, '')
     } else {
-      throw new Error('[util Error]: trim function invalid arguments')
+      throw new Error('[utils Error]: trim function invalid arguments')
     }
   }
   prototype['trimLeft'] = function(str, char) {
@@ -40,7 +40,7 @@
     if (str) {
       return res.replace(new RegExp('^(' + c + ')+'), '')
     } else {
-      throw new Error('[util Error]: trimLeft function invalid arguments')
+      throw new Error('[utils Error]: trimLeft function invalid arguments')
     }
   }
   prototype['trimRight'] = function(str, char) {
@@ -49,7 +49,7 @@
     if (str) {
       return res.replace(new RegExp('(' + c + ')+$'), '')
     } else {
-      throw new Error('[util Error]: trimRight function invalid arguments')
+      throw new Error('[utils Error]: trimRight function invalid arguments')
     }
   }
   /**
@@ -104,7 +104,7 @@
       })
       return res
     } else {
-      throw new Error('[util Error]: find function missing arguments')
+      throw new Error('[utils Error]: find function missing arguments')
     }
   }
   /**
@@ -135,7 +135,7 @@
         return isDesc ? ele2[key] - ele1[key] : ele1[key] - ele2[key]
       })
     } else {
-      throw new Error('[util Error]: sortObjs function invalid arguments')
+      throw new Error('[utils Error]: sortObjs function invalid arguments')
     }
   }
   /**
@@ -226,7 +226,7 @@
     var len1 = a1.length,
       len2 = a2.length
     if (arguments.length > 2) {
-      throw new Error('[util Error]: equalArr only can pass two arguments')
+      throw new Error('[utils Error]: equalArr only can pass two arguments')
     }
     if (len1 !== len2) return false
 
@@ -331,7 +331,7 @@
   prototype['bind'] = function(fun, context) {
     var argsOut
     var argsIn
-    if (typeof fun !== 'function') throw new Error('[util Error]: bind missing first argument')
+    if (typeof fun !== 'function') throw new Error('[utils Error]: bind missing first argument')
     if (arguments.length > 2) {
       argsOut = prototype['objToArray'](arguments, 2)
       return function() {
@@ -367,9 +367,9 @@
     // 默认既执行第一次，也执行最后一次
     !hasLeading && (option.leading = true)
     !hasTrailing && (option.trailing = true)
-    if (typeof fun !== 'function') throw new Error('[util Error]: throttle missing first argument')
-    if (typeof +delay !== 'number') throw new Error('[util Error]: throttle missing second argument')
-    if (hasTrailing && hasLeading) throw new Error('[util Error]: throttle can not pass two options in the same time')
+    if (typeof fun !== 'function') throw new Error('[utils Error]: throttle missing first argument')
+    if (typeof +delay !== 'number') throw new Error('[utils Error]: throttle missing second argument')
+    if (hasTrailing && hasLeading) throw new Error('[utils Error]: throttle can not pass two options in the same time')
     return function() {
       var args = arguments,
         context = this
@@ -427,7 +427,7 @@
   prototype['sleep'] = function(milliSeconds) {
     var now = Date.now()
     if (typeof milliSeconds !== 'number')
-      throw new Error('[util Error]: sleep function please pass Number')
+      throw new Error('[utils Error]: sleep function please pass Number')
     while (Date.now() < now + milliSeconds);
   }
   /**
@@ -444,10 +444,10 @@
    */
   prototype['composeStack'] = function(arr) {
     if (!Array.isArray(arr))
-      throw new Error('[util Error]: composeStack function\'s Function stack must be array')
+      throw new Error('[utils Error]: composeStack function\'s Function stack must be array')
     arr.forEach(function(fun) {
       if (typeof fun !== 'function')
-        throw new Error('[util Error]: composeStack function\'s Function stack must be composed of functions')
+        throw new Error('[utils Error]: composeStack function\'s Function stack must be composed of functions')
     })
     return function(arg) {
       var index = -1
@@ -455,7 +455,7 @@
         index = i
         var fun = arr[index]
         if (!fun) return
-        return fun(function next() {
+        return fun.call(this, function next() {
           // 递归调用dispatch，从而调用数组中下一个函数
           dispatch(++i)
         }, arg)
@@ -471,7 +471,11 @@
    */
   prototype['compose'] = function() {
     var index = 0,
-      funs = arguments
+      funs = prototype['objToArray'](arguments)
+    funs.forEach(function(fun) {
+      if (typeof fun !== 'function')
+        throw new Error('[utils Error]: compose function\'s arguments must be function')
+    })
     return function(arg) {
       var res = funs[index++].call(this, arg)
       while (index < funs.length) res = funs[index++].call(this, res)
@@ -487,23 +491,18 @@
    * 核心思想：
    * 1. 通过闭包保存函数参数，函数参数个数不满足要求则递归，满足则调用传入的函数
    */
-  prototype['curry'] = function curry(fn, args) {
+  prototype['curry'] = function curry(fn) {
     var length = fn.length
-    args = args || []
-    if (!Array.isArray(args)) args = [args]
+    // 科里化参数，除去要调用的function
+    var curryArgs = prototype['objToArray'](arguments, 1)
     return function() {
-      var _args = args.slice(0),
-        arg,
-        i
-
-      for (i = 0; i < arguments.length; i++) {
-        arg = arguments[i]
-        _args.push(arg)
-      }
-      if (_args.length < length) {
-        return curry.call(this, fn, _args)
+      // 科里化函数调用时的参数
+      var args = prototype['objToArray'](arguments, 0)
+      var allArgs = curryArgs.concat(args)
+      if (allArgs.length < length) {
+        return curry.apply(this, [fn].concat(allArgs))
       } else {
-        return fn.apply(this, _args)
+        return fn.apply(this, allArgs)
       }
     }
   }
@@ -514,13 +513,13 @@
    */
   prototype['partial'] = function(fn) {
     var length = fn.length || 0,
-      args = [].slice.call(arguments, 1)
+      args = prototype['objToArray'](arguments, 1)
     return function() {
-      var _args = args.concat([].slice.call(arguments, 0))
+      var _args = args.concat(prototype['objToArray'](arguments, 0))
       if (_args.length === length) {
         return fn.apply(this, _args)
       } else {
-        throw new Error('[util Error]: partial function missing arguments')
+        throw new Error('[utils Error]: partial function missing arguments')
       }
     }
   }
@@ -579,7 +578,7 @@
       }
       return res
     } else {
-      throw new Error('[util Error]: assign function\'s first argument must be an Object')
+      throw new Error('[utils Error]: assign function\'s first argument must be an Object')
     }
   }
   /**
@@ -606,7 +605,7 @@
       }
       return res
     } else {
-      throw new Error('[util Error]: deepAssign function\'s first argument must be an Object')
+      throw new Error('[utils Error]: deepAssign function\'s first argument must be an Object')
     }
   }
   /**
@@ -659,14 +658,6 @@
     return true
   }
   /**
-   * 判断是否为Object类型
-   * @param  {any}       arg     [任意类型参数]
-   * @return {Boolean}           [鉴定结果]
-   */
-  prototype['isObject'] = function(arg) {
-    return Object.prototype.toString.call(arg).indexOf('Object]') !== -1
-  }
-  /**
    * 安全获取对象深层属性
    * @param  {Array}   props   [要获取的属性列表]
    * @param  {Object}  obj     [获取属性的对象]
@@ -679,7 +670,7 @@
       }, obj)
     }
     else {
-      throw new Error('[util Error]: get function invalid arguments')
+      throw new Error('[utils Error]: get function invalid arguments')
     }
   }
   /**
@@ -689,7 +680,7 @@
    */
   prototype['invert'] = function(obj) {
     var newObj = {}
-    if (!prototype['isObject'](obj)) throw new Error('[util Error]: invert first argument must be Object')
+    if (!prototype['isObject'](obj)) throw new Error('[utils Error]: invert first argument must be Object')
     Object.keys(obj).forEach(key => {
       var newKey = obj[key]
       newObj[newKey] = key
@@ -734,9 +725,22 @@
   prototype['getPaths'] = function(pathname) {
     return pathname.split('/').slice(1)
   }
+  /**
+   * 判断是否为Object类型
+   * @param  {any}       arg     [任意类型参数]
+   * @return {Boolean}           [鉴定结果]
+   */
+  prototype['isObject'] = function(arg) {
+    return Object.prototype.toString.call(arg).indexOf('Object]') !== -1
+  }
+  /**
+   * 判断是否为Boolean类型
+   * @param  {any}       arg     [任意类型参数]
+   * @return {Boolean}           [鉴定结果]
+   */
   prototype['isBoolean'] = function(arg) {
     return typeof arg === 'boolean'
   }
 
-  return new Util
+  return new Utils
 })

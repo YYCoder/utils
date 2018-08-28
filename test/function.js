@@ -4,7 +4,10 @@ const {
   throttle,
   denounce,
   sleep,
-  composeStack
+  composeStack,
+  compose,
+  curry,
+  partial
 } = require('../src/util')
 
 function deepEq(actual, value, message) {
@@ -161,7 +164,68 @@ describe('函数方法：', () => {
 
 
   describe('compose: ', () => {
-    
+    const input = 'hello functional programming'
+    function nameWord(word) {
+      return word.split(' ')
+    }
+    function compName(wordArr) {
+      return wordArr.join('-')
+    }
+    it('compose组合函数基本调用，期望返回字符串 hello-functional-programming', () => {
+      const output = 'hello-functional-programming'
+      const getName = compose(nameWord, compName)
+      assert.ok(getName(input) === output, '返回结果不对')
+    })
+
+    it('值传入一个函数，期望返回数组[hello, functional, programming]', () => {
+      const output = ['hello', 'functional', 'programming']
+      const getSplitName = compose(nameWord)
+      deepEq(getSplitName(input), output)
+    })
+  })
+
+  describe('curry: ', () => {
+    let hasCalled = false
+    function curryTest1(arg1, arg2, arg3, arg4) {
+      return [arg1, arg2, arg3, arg4]
+    }
+    function curryTest2(arg1, arg2) {
+      hasCalled = true
+      return [arg1, arg2]
+    }
+    it('首次调用赋予初始参数，应返回 [1, 2, 3, 4]', () => {
+      const test = curry(curryTest1, 1)(2)
+      deepEq(test(3)(4), [1, 2, 3, 4], '调用返回结果不正确')
+    })
+    it('首次调用不传初始参数，应返回 [1, 2, 3, 4]', () => {
+      const test = curry(curryTest1)(1, 2)
+      deepEq(test(3)(4), [1, 2, 3, 4], '调用返回结果不正确')
+    })
+    it('参数未达到要求个数，不会调用传入函数', () => {
+      curry(curryTest2)(3)
+      assert.ok(!hasCalled, '调用错误，参数未达到要求个数便调用科里化函数')
+    })
+  })
+
+  describe('partial: ', () => {
+    function partialTest1(a1, a2, a3) {
+      return [a1, a2, a3]
+    }
+    function partialTest2() {
+      return []
+    }
+    it('首次调用传入初始参数，应返回 [1, 2, 3]', () => {
+      const test = partial(partialTest1, 1, 2)
+      deepEq(test(3), [1, 2, 3], '调用返回结果不正确')
+    })
+    it('首次调用无初始参数，应返回 [1, 2, 3]', () => {
+      const test = partial(partialTest1)
+      deepEq(test(1, 2, 3), [1, 2, 3], '调用返回结果不正确')
+    })
+    it('无参数，应返回 []', () => {
+      const test = partial(partialTest2)
+      deepEq(test(), [], '调用返回结果不正确')
+    })
   })
 
 })
