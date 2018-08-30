@@ -29,9 +29,9 @@
 <body>
   <h1>util demo</h1>
 
-  <script>
+  <script type="text/javascript">
     // 防抖函数
-    /*var denounceFun = util['denounce'](function (e) {
+    /*var denounceFun = utils['denounce'](function (e) {
       // console.log(e);
       // console.log(this);
       console.log(e.offsetX);
@@ -42,7 +42,7 @@
     });*/
 
     // 节流函数
-    /*var throttleFun = util['throttle'](function (e) {
+    /*var throttleFun = utils['throttle'](function (e) {
       console.log(e);
       console.log(this);
       return e.offsetX;
@@ -54,157 +54,160 @@
 
     // 对象深度克隆
     /*var obj2 = {
-          name: '袁野',
-          age: 22,
-          value: null
+      name: '袁野',
+      age: 22,
+      value: null
+    },
+    obj1 = {
+      name: 'yuanye',
+      like: ['coding', 'reading'],
+      fun: function () {
+        console.log(123)
       },
-      obj1 = {
-          name: 'yuanye',
-          like: ['coding', 'reading'],
-          fun: function () {
-              console.log(123);
-          },
-          toObj: obj2
-      },
-      arr = [1, 2, 3, {
-          name: 4
-      }];
-      var newObj = util.deepClone(obj1),
-          newArr = util.deepClone(arr);
-      obj2.name = '123';
-      console.log(obj1);
-      console.log(newObj);
-      console.log(newArr);*/
+      toObj: obj2
+    },
+    arr = [1, 2, 3, {
+      name: 4
+    }]
+    var newObj = utils.deepClone(obj1),
+      newArr = utils.deepClone(arr)
+    obj2.name = '123'
+    console.log(obj1)
+    console.log(newObj)
+    console.log(newArr)*/
+
 
     // 数组去重
     /*var arr = [1,3,4,5,1,1,1];
-      console.log(util['arrUnique'](arr));*/
+      console.log(utils['arrUnique'](arr));*/
 
     // 对象拓展
     /*var obj = {
-          name: 'yy',
-          like: [1, 2, 3],
-          a: {
-              a1: 1
-          }
-      };
-      console.log(util['deepAssign'](obj, {
-          like: [4, 5, 6],
-          a: {
-              a2: 2
-          }
-      }));
-      console.log(util['assign'](obj, {
-          like: [4, 5, 6],
-          a: {
-              a2: 2
-          }
-      }));
-      // 测试循环引用
-      console.log(util['deepAssign'](obj, {
-          like: [4, 5, 6],
-          a: obj
-      }));
-      console.log(util['assign'](obj, {
-          like: [4, 5, 6],
-          a: obj
-      }));*/
+      name: 'yy',
+      like: [1, 2, 3],
+      a: {
+        a1: 1
+      }
+    }
+    console.log(utils['deepAssign'](obj, {
+      like: [4, 5, 6],
+      a: {
+        a2: 2
+      }
+    }))*/
+    /*console.log(utils['assign'](obj, {
+      like: [4, 5, 6],
+      a: {
+        a2: 2
+      }
+    }))*/
+    // 测试循环引用
+    /*console.log(utils['deepAssign'](obj, {
+      like: [4, 5, 6],
+      a: obj
+    }))
+    console.log(utils['assign'](obj, {
+      name: 'test'
+    }, {
+      name: 'hahaha'
+    }))*/
 
     // 数组扁平化
     /*var arr = [1,2,[3,4,5,[6,7,1,8]]];
       console.time('util: ')
-      console.log(util['flatten'](arr, false));
+      console.log(utils['flatten'](arr, false));
       console.timeEnd('util: ')*/
 
     // 数组取并集
     /*var a1 = [1, 2, 3, 7, 8];
       var a2 = [1, 2, 3, 4, 5, 6, [7, 8]];
-      console.log(util['union'](a1, a2));
-      console.log(util['union'](a1, a2, 11, 13, {}));*/
+      console.log(utils['union'](a1, a2));
+      console.log(utils['union'](a1, a2, 11, 13, {}));*/
 
     // 对象数组排序
     /*var arr = [{ age: 22 }, { age: 23 }, { age: 18 }]
-      console.log(util['sortObjs'](arr, 'age'))
+      console.log(utils['sortObjs'](arr, 'age'))
       console.log(arr)*/
 
     // 数组取反集
     /*var a1 = [1, 2, 3];
       var a2 = [3, 4, 6];
-      console.log(util['diff'](a1, a2));
-      console.log(util['diff'](a1));*/
+      console.log(utils['diff'](a1, a2));
+      console.log(utils['diff'](a1));*/
 
     // 数组比对，递归比对所有值
     /*var a1 = [NaN, 2, 3, [3, 4]];
       var a2 = [NaN, 2, 3, [3, 4]];
-      console.log(util['equalArr'](a1, a2));
-      console.log(util['equalArr'](a1, a2, []));*/
+      console.log(utils['equalArr'](a1, a2));
+      console.log(utils['equalArr'](a1, a2, []));*/
 
     // 对象比对，递归比对所有自有属性
     /*var o1 = {
-          name: '123',
-          age: 22,
-          // like: [],
-          selfWrap: {}
-      };
-      var o2 = {
-          name: '123',
-          age: 22,
-          // like: [],
-          selfWrap: {}
-      };
-      o1.selfWrap.self = o1;
-      o2.selfWrap.self = o2;
-      // console.log(util['equalObj'](o1, o2));
-      console.log(util['equalObj'](o1, o2));*/
+      name: '123',
+      age: 22,
+      like: [1],
+      selfWrap: {}
+    }
+    var o2 = {
+      name: '123',
+      age: 22,
+      like: [1],
+      selfWrap: {}
+    }
+    o1.selfWrap.self = o1
+    o2.selfWrap.self = o2
+    // console.log(utils['equalObj'](o1, o2))
+    console.log(utils['equalObj'](o1, o2))*/
+
 
     // 科里化函数
-    /*util['curry'](function (a1, a2, a3) {
-          console.log(a1);
-          console.log(a2);
-          console.log(a3);
-      }, ['a1'])('a2', 'a3');
-      util['curry'](function (b1, b2, b3) {
-          console.log(b1);
-          console.log(b2);
-          console.log(b3);
-      })('b1')('b2')('b3');*/
+    /*utils['curry'](function (a1, a2, a3) {
+      console.log(a1)
+      console.log(a2)
+      console.log(a3)
+    }, ['a1'])('a2', 'a3')
+    utils['curry'](function (b1, b2, b3) {
+      console.log(b1)
+      console.log(b2)
+      console.log(b3)
+    })('b1')('b2')('b3')*/
 
     // 偏函数（局部应用）
-    /*var addOne = util['partial'](function (a, b) {
-          console.log(a + b);
-      }, 1);
-      addOne.call({name: 123}, 2);
-      // ES6实现简单的局部应用
-      // const partial = (fn, ...args) => (...arguments) => fn.apply(this, [...args, ...arguments])    
-      // 问题：
-      // 1. 不能修改this指向（箭头函数的缺陷）
-      // 2. 严格模式下会报错，无法使用
-      // 3. 没有参数验证，即使调用时参数个数不正确，依然会调用
-      const partial = (fn, ...args) => (...arguments) => fn.apply(this, [...args, ...arguments])
-      const add = partial((a, b) => a + b)
-      const add1 = partial((a, b) => a + b, 1)
-      const add12 = partial((a, b) => a + b, 1, 2)
-      console.log(add(1, 2))
-      console.log(add1(3))
-      console.log(add12())
-      */
+    /*var addOne = utils['partial'](function (a, b) {
+      console.log(a + b)
+    }, 1)
+    addOne.call({ name: 123 }, 2)*/
+    // ES6实现简单的局部应用
+    // const partial = (fn, ...args) => (...arguments) => fn.apply(this, [...args, ...arguments])    
+    // 问题：
+    // 1. 不能修改this指向（箭头函数的缺陷）
+    // 2. 严格模式下会报错，无法使用
+    // 3. 没有参数验证，即使调用时参数个数不正确，依然会调用
+    /*const partial = (fn, ...args) => (...arguments) => fn.apply(this, [...args, ...arguments])
+    const add = partial((a, b) => a + b)
+    const add1 = partial((a, b) => a + b, 1)
+    const add12 = partial((a, b) => a + b, 1, 2)
+    console.log(add(1, 2))
+    console.log(add1(3))
+    console.log(add12())*/
+      
 
     // 函数栈组合
     /*var arrFun = [
-          function (arg, next) {
-              console.log('fun1 first');
-              console.log(arg);
-              next();
-              console.log('fun1 second');
-          },
-          function (arg, next) {
-              console.log('fun2 first');
-              console.log(arg);
-              next();
-              console.log('fun2 second');
-          }
-      ];
-      util['composeStack'](arrFun)('hahaha');*/
+      function (next, arg) {
+        console.log('fun1 first')
+        console.log(arg)
+        next()
+        console.log('fun1 second')
+      },
+      function (next, arg) {
+        console.log('fun2 first')
+        console.log(arg)
+        next()
+        console.log('fun2 second')
+      }
+    ]
+    console.log(utils['composeStack'](arrFun)('hahaha'))*/
 
     // 惰性函数：利用闭包保存首次执行的结果，之后多次调用都可以直接使用上次的结果，并且避免污染外部作用域
     /*var lazy = function (fun) {
@@ -235,101 +238,127 @@
 
     // 函数组合
     /*function nameWord(word) {
-          return word.split(' ')
-      }
-      function compName(wordArr) {
-          return wordArr.join('-')
-      }
-      var name = util['compose'](nameWord, compName)
-      console.log(name('hello functional programming'));
-      // 配合curry函数实现复杂操作。只需定义基本操作函数，无需关注数据
-      function filter(fun, arr) {
-          return arr.filter(function (ele) {
-              return fun(ele)
-          })
-      }
-      function sortBy(prop, isDesc, arr) {
-          return arr.sort(function (pre, nex) {
-              return isDesc ? nex[prop] - pre[prop] : pre[prop] - nex[prop]
-          })
-      }
-      var filter = util['curry'](filter)
-      var sortBy = util['curry'](sortBy)
-      // 组合筛选出name为yuanye，并且按降序排序操作
-      var getSortedYuanye = util['compose'](filter(function (ele) {
-          return ele.name === 'yuanye'
-      }), sortBy('age', true))
-      // 只需在最终执行时修改数据，中途操作方法无需修改
-      var arr = [{
-          name: 'yuanye',
-          age: 19
-      }, {
-          name: 'aaa',
-          age: 11
-      }, {
-          name: '123',
-          age: 20
-      }, {
-          name: 'yuanye',
-          age: 22
-      }]
-      console.log(getSortedYuanye(arr))*/
-    // 通过reduce方式实现函数组合
-    /*function compose() {
-          var arr = [].slice.call(arguments, 0)
-          return function (a, b) {
-              var firstRes = arr[0](a, b)
-              return arr.reduce(function (pre, nex, index) {
-                  if (index === 1) pre = firstRes
-                  return nex(pre)
-              })
-          }
-      }
-      function add(a, b) {
-          return a + b
-      }
-      add = util['curry'](add)
-      function time(a, b) {
-          return a * b
-      }
-      var timeCurry = util['curry'](function (a) {
-          // 需要额外传入新参数时，为了不影响原有元函数（time），最好科里化一个新的函数，并传入参数
-          return time(a, 4)
+      return word.split(' ')
+    }
+    function compName(wordArr) {
+      return wordArr.join('-')
+    }
+    var getName = utils['compose'](nameWord, compName)
+    console.log(getName('hello functional programming'))*/
+
+    // curry 科里化
+    /*function curryTest(arg1, arg2, arg3, arg4) {
+      console.log(arg1, arg2, arg3, arg4)
+      return [arg1, arg2, arg3, arg4]
+    }
+    var test = utils['curry'](curryTest, 'test1')('test2')
+    // test('test3')('test4')
+    console.log(test('test3', 'test4'))*/
+
+    // compose 配合 curry 实现复杂操作。只需定义基本操作函数，无需关注数据
+    /*function filter(fun, arr) {
+      return arr.filter(function (ele) {
+        return fun(ele)
       })
-      var addTime = compose(add, timeCurry);
-      console.log(addTime(1, 2))*/
+    }
+    function sortBy(prop, isDesc, arr) {
+      return arr.sort(function (pre, nex) {
+        return isDesc ? nex[prop] - pre[prop] : pre[prop] - nex[prop]
+      })
+    }
+    var filterCurry = utils['curry'](filter)(function (ele) {
+      return ele.name === 'yuanye'
+    })
+    var sortByCurry = utils['curry'](sortBy)('age', true)
+    // 组合筛选出name为yuanye，并且按降序排序操作
+    var getSortedYuanye = utils['compose'](filterCurry, sortByCurry)
+    // 只需在最终执行时修改数据，中途操作方法无需修改
+    var arr = [{
+      name: 'yuanye',
+      age: 19
+    }, {
+      name: 'aaa',
+      age: 11
+    }, {
+      name: '123',
+      age: 20
+    }, {
+      name: 'yuanye',
+      age: 22
+    }]
+    console.log(getSortedYuanye(arr))*/
+    // 通过 reduce 方式实现函数组合
+    /*function compose() {
+      var arr = [].slice.call(arguments, 0)
+      return function (a, b) {
+        var firstRes = arr[0](a, b)
+        return arr.reduce(function (pre, nex, index) {
+          if (index === 1) pre = firstRes
+          return nex(pre)
+        })
+      }
+    }
+    function add(a, b) {
+      return a + b
+    }
+    add = utils['curry'](add)
+    function time(a, b) {
+      return a * b
+    }
+    var timeCurry = utils['curry'](function (a) {
+      // 需要额外传入新参数时，为了不影响原有元函数（time），最好科里化一个新的函数，并传入参数
+      return time(a, 4)
+    })
+    var addTime = compose(add, timeCurry)
+    console.log(addTime(1, 2))*/
 
     // 数组元素乱序
     /*var arr = [1, 2, 3, 4, 5]
-      // 统计每个值出现的次数
-      var times = [0, 0, 0, 0, 0]
-      for (var i = 0; i < 10e5; i++) {
-          arr.sort(function (p, n) {
-              return Math.random() - 0.5
-          })
+    // 统计每个值出现的次数
+    var times = [0, 0, 0, 0, 0]
+    for (var i = 0; i < 10e5; i++) {
+      arr.sort(function (p, n) {
+        return Math.random() - 0.5
+      })
 
-          times[arr[4]-1]++
-      }
-      console.log(times)*/
+      times[arr[4]-1]++
+    }
+    console.log(times)*/
 
     // 安全获取对象深层属性
     /*var deepObj = {
-          name: 'hahaha',
-          likes: [
-              {
-                  name: 'coding',
-                  detail: {
-                      type: 'work'
-                  }
-              }
-          ]
-      }
-      console.log(util['get'](['likes', '0', 'detail'], deepObj))
-      console.log(util['get'](['likes', '0', 'detail', 'test'], deepObj))
-      console.log(util['get'](['likes', '0', 'detail', 'type', 'hwhwhw'], deepObj))*/
+      name: 'hahaha',
+      likes: [
+        {
+          name: 'coding',
+          detail: {
+            type: 'work'
+          }
+        }
+      ],
+      obj: null
+    }
+    deepObj.obj = deepObj
+    console.log(utils['get'](['likes', '0', 'detail'], deepObj))
+    console.log(utils['get'](['likes', '0', 'detail', 'test'], deepObj))
+    console.log(utils['get'](['likes', '0', 'detail', 'type', 'hwhwhw'], deepObj))
+    console.log(utils['get'](['obj', 'name'], deepObj))*/
+
+    // invert翻转对象键值
+    /*const obj = {
+      name: 'haha',
+      likes: [1, 2],
+      obj: { test: true },
+      null: 123
+    }
+    console.log(utils['invert'](obj))*/
 
     // url添加参数函数
-    // console.log(util['addQuery'](location.href, 'channelFrom=123'))
+    // console.log(utils['addQuery']('http://markey.test.cn', 'channelFrom=123'))
+    // console.log(utils['addQuery']('http://markey.test.cn?query=test', 'channelFrom=123'))
+
+    // 获取url参数
+    console.log(utils['getQuery']())
 
   </script>
 

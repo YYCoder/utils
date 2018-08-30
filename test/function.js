@@ -3,15 +3,17 @@ const {
   bind,
   throttle,
   denounce,
-  sleep
+  sleep,
+  composeStack,
+  compose,
+  curry,
+  partial
 } = require('../src/util')
 
 function deepEq(actual, value, message) {
   assert.deepStrictEqual(actual, value, message)
 }
-function fail(message) {
-  assert.fail(message)
-}
+
 // 通过死循环模拟持续调用，通过count统计调用次数，从而确认是否正常节流
 function testThrottle(number, timeout, done, options = {}) {
   const start = Date.now()
@@ -109,12 +111,122 @@ describe('函数方法：', () => {
   })
 
   describe('sleep: ', () => {
-
-    it('默认不传options对象，则首次也调用，最后也调用', (done) => {
+    it('阻塞1秒', (done) => {
+      const start = Date.now()
+      setTimeout(() => {
+        sleep(1000)
+        const end = Date.now()
+        assert.ok(end - start >= 1000, '阻塞无效')
+        done()
+      })
     })
-
   })
 
+  describe('composeStack: ', () => {
+    const resArr1 = []
+    const funArr1 = [
+      (next) => {
+        resArr1.push('first begin')
+        next()
+        resArr1.push('first end')
+      },
+      (next) => {
+        resArr1.push('second begin')
+        next()
+        resArr1.push('second end')
+      }
+    ]
+    const resArr2 = []
+    const funArr2 = [
+      (next, arg) => {
+        resArr2.push('first begin')
+        resArr2.push(arg)
+        next()
+        resArr2.push('first end')
+      },
+      (next, arg) => {
+        resArr2.push('second begin')
+        resArr2.push(arg)
+        next()
+        resArr2.push('second end')
+      }
+    ]
+
+    it('koa-compose组合函数，基本使用', () => {
+      composeStack(funArr1)()
+      deepEq(resArr1, ['first begin', 'second begin', 'second end', 'first end'])
+    })
+    it('koa-compose组合函数，传入参数，参数会在多个函数中传递', () => {
+      composeStack(funArr2)('test')
+      deepEq(resArr2, ['first begin', 'test', 'second begin', 'test', 'second end', 'first end'])
+    })
+  })
+
+
+  describe('compose: ', () => {
+    const input = 'hello functional programming'
+    function nameWord(word) {
+      return word.split(' ')
+    }
+    function compName(wordArr) {
+      return wordArr.join('-')
+    }
+    it('compose组合函数基本调用，期望返回字符串 hello-functional-programming', () => {
+      const output = 'hello-functional-programming'
+      const getName = compose(nameWord, compName)
+      assert.ok(getName(input) === output, '返回结果不对')
+    })
+
+    it('值传入一个函数，期望返回数组[hello, functional, programming]', () => {
+      const output = ['hello', 'functional', 'programming']
+      const getSplitName = compose(nameWord)
+      deepEq(getSplitName(input), output)
+    })
+  })
+
+  describe('curry: ', () => {
+    let hasCalled = false
+    function curryTest1(arg1, arg2, arg3, arg4) {
+      return [arg1, arg2, arg3, arg4]
+    }
+    function curryTest2(arg1, arg2) {
+      hasCalled = true
+      return [arg1, arg2]
+    }
+    it('首次调用赋予初始参数，应返回 [1, 2, 3, 4]', () => {
+      const test = curry(curryTest1, 1)(2)
+      deepEq(test(3)(4), [1, 2, 3, 4], '调用返回结果不正确')
+    })
+    it('首次调用不传初始参数，应返回 [1, 2, 3, 4]', () => {
+      const test = curry(curryTest1)(1, 2)
+      deepEq(test(3)(4), [1, 2, 3, 4], '调用返回结果不正确')
+    })
+    it('参数未达到要求个数，不会调用传入函数', () => {
+      curry(curryTest2)(3)
+      assert.ok(!hasCalled, '调用错误，参数未达到要求个数便调用科里化函数')
+    })
+  })
+
+  describe('partial: ', () => {
+    function partialTest1(a1, a2, a3) {
+      return [a1, a2, a3]
+    }
+    function partialTest2() {
+      return []
+    }
+    it('首次调用传入初始参数，应返回 [1, 2, 3]', () => {
+      const test = partial(partialTest1, 1, 2)
+      deepEq(test(3), [1, 2, 3], '调用返回结果不正确')
+    })
+    it('首次调用无初始参数，应返回 [1, 2, 3]', () => {
+      const test = partial(partialTest1)
+      deepEq(test(1, 2, 3), [1, 2, 3], '调用返回结果不正确')
+    })
+    it('无参数，应返回 []', () => {
+      const test = partial(partialTest2)
+      deepEq(test(), [], '调用返回结果不正确')
+    })
+  })
 
 })
 
