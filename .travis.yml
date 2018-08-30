@@ -24,7 +24,3 @@ before_install:
 script:
   - yarn test
 
-before_deploy: 
-
-deploy:
-  skip_cleanup: true
