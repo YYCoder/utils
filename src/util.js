@@ -12,6 +12,7 @@
 })(this, function() {
   'use strict'
 
+
   // 构造函数
   function Utils() {
   }
