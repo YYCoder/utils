@@ -53,7 +53,7 @@
 
 
     // 对象深度克隆
-    var obj2 = {
+    /*var obj2 = {
       name: '袁野',
       age: 22,
       value: null
@@ -74,7 +74,7 @@
     obj2.name = '123'
     console.log(obj1)
     console.log(newObj)
-    console.log(newArr)
+    console.log(newArr)*/
 
 
     // 数组去重
@@ -83,33 +83,34 @@
 
     // 对象拓展
     /*var obj = {
-          name: 'yy',
-          like: [1, 2, 3],
-          a: {
-              a1: 1
-          }
-      };
-      console.log(utils['deepAssign'](obj, {
-          like: [4, 5, 6],
-          a: {
-              a2: 2
-          }
-      }));
-      console.log(utils['assign'](obj, {
-          like: [4, 5, 6],
-          a: {
-              a2: 2
-          }
-      }));
-      // 测试循环引用
-      console.log(utils['deepAssign'](obj, {
-          like: [4, 5, 6],
-          a: obj
-      }));
-      console.log(utils['assign'](obj, {
-          like: [4, 5, 6],
-          a: obj
-      }));*/
+      name: 'yy',
+      like: [1, 2, 3],
+      a: {
+        a1: 1
+      }
+    }
+    console.log(utils['deepAssign'](obj, {
+      like: [4, 5, 6],
+      a: {
+        a2: 2
+      }
+    }))*/
+    /*console.log(utils['assign'](obj, {
+      like: [4, 5, 6],
+      a: {
+        a2: 2
+      }
+    }))*/
+    // 测试循环引用
+    /*console.log(utils['deepAssign'](obj, {
+      like: [4, 5, 6],
+      a: obj
+    }))
+    console.log(utils['assign'](obj, {
+      name: 'test'
+    }, {
+      name: 'hahaha'
+    }))*/
 
     // 数组扁平化
     /*var arr = [1,2,[3,4,5,[6,7,1,8]]];
@@ -142,21 +143,22 @@
 
     // 对象比对，递归比对所有自有属性
     /*var o1 = {
-          name: '123',
-          age: 22,
-          // like: [],
-          selfWrap: {}
-      };
-      var o2 = {
-          name: '123',
-          age: 22,
-          // like: [],
-          selfWrap: {}
-      };
-      o1.selfWrap.self = o1;
-      o2.selfWrap.self = o2;
-      // console.log(utils['equalObj'](o1, o2));
-      console.log(utils['equalObj'](o1, o2));*/
+      name: '123',
+      age: 22,
+      like: [1],
+      selfWrap: {}
+    }
+    var o2 = {
+      name: '123',
+      age: 22,
+      like: [1],
+      selfWrap: {}
+    }
+    o1.selfWrap.self = o1
+    o2.selfWrap.self = o2
+    // console.log(utils['equalObj'](o1, o2))
+    console.log(utils['equalObj'](o1, o2))*/
+
 
     // 科里化函数
     /*utils['curry'](function (a1, a2, a3) {
@@ -312,35 +314,51 @@
 
     // 数组元素乱序
     /*var arr = [1, 2, 3, 4, 5]
-      // 统计每个值出现的次数
-      var times = [0, 0, 0, 0, 0]
-      for (var i = 0; i < 10e5; i++) {
-          arr.sort(function (p, n) {
-              return Math.random() - 0.5
-          })
+    // 统计每个值出现的次数
+    var times = [0, 0, 0, 0, 0]
+    for (var i = 0; i < 10e5; i++) {
+      arr.sort(function (p, n) {
+        return Math.random() - 0.5
+      })
 
-          times[arr[4]-1]++
-      }
-      console.log(times)*/
+      times[arr[4]-1]++
+    }
+    console.log(times)*/
 
     // 安全获取对象深层属性
     /*var deepObj = {
-          name: 'hahaha',
-          likes: [
-              {
-                  name: 'coding',
-                  detail: {
-                      type: 'work'
-                  }
-              }
-          ]
-      }
-      console.log(utils['get'](['likes', '0', 'detail'], deepObj))
-      console.log(utils['get'](['likes', '0', 'detail', 'test'], deepObj))
-      console.log(utils['get'](['likes', '0', 'detail', 'type', 'hwhwhw'], deepObj))*/
+      name: 'hahaha',
+      likes: [
+        {
+          name: 'coding',
+          detail: {
+            type: 'work'
+          }
+        }
+      ],
+      obj: null
+    }
+    deepObj.obj = deepObj
+    console.log(utils['get'](['likes', '0', 'detail'], deepObj))
+    console.log(utils['get'](['likes', '0', 'detail', 'test'], deepObj))
+    console.log(utils['get'](['likes', '0', 'detail', 'type', 'hwhwhw'], deepObj))
+    console.log(utils['get'](['obj', 'name'], deepObj))*/
+
+    // invert翻转对象键值
+    /*const obj = {
+      name: 'haha',
+      likes: [1, 2],
+      obj: { test: true },
+      null: 123
+    }
+    console.log(utils['invert'](obj))*/
 
     // url添加参数函数
-    // console.log(utils['addQuery'](location.href, 'channelFrom=123'))
+    // console.log(utils['addQuery']('http://markey.test.cn', 'channelFrom=123'))
+    // console.log(utils['addQuery']('http://markey.test.cn?query=test', 'channelFrom=123'))
+
+    // 获取url参数
+    console.log(utils['getQuery']())
 
   </script>
 

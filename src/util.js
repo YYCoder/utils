@@ -31,7 +31,7 @@
     if (str) {
       return res.replace(regExp, '')
     } else {
-      throw new Error('[utils Error]: trim function invalid arguments')
+      throw new Error('[utils Error]: trim function invalid arguments.')
     }
   }
   prototype['trimLeft'] = function(str, char) {
@@ -40,7 +40,7 @@
     if (str) {
       return res.replace(new RegExp('^(' + c + ')+'), '')
     } else {
-      throw new Error('[utils Error]: trimLeft function invalid arguments')
+      throw new Error('[utils Error]: trimLeft function invalid arguments.')
     }
   }
   prototype['trimRight'] = function(str, char) {
@@ -49,7 +49,7 @@
     if (str) {
       return res.replace(new RegExp('(' + c + ')+$'), '')
     } else {
-      throw new Error('[utils Error]: trimRight function invalid arguments')
+      throw new Error('[utils Error]: trimRight function invalid arguments.')
     }
   }
   /**
@@ -104,7 +104,7 @@
       })
       return res
     } else {
-      throw new Error('[utils Error]: find function missing arguments')
+      throw new Error('[utils Error]: find function missing arguments.')
     }
   }
   /**
@@ -135,7 +135,7 @@
         return isDesc ? ele2[key] - ele1[key] : ele1[key] - ele2[key]
       })
     } else {
-      throw new Error('[utils Error]: sortObjs function invalid arguments')
+      throw new Error('[utils Error]: sortObjs function invalid arguments.')
     }
   }
   /**
@@ -226,7 +226,7 @@
     var len1 = a1.length,
       len2 = a2.length
     if (arguments.length > 2) {
-      throw new Error('[utils Error]: equalArr only can pass two arguments')
+      throw new Error('[utils Error]: equalArr only can pass two arguments.')
     }
     if (len1 !== len2) return false
 
@@ -331,7 +331,7 @@
   prototype['bind'] = function(fun, context) {
     var argsOut
     var argsIn
-    if (typeof fun !== 'function') throw new Error('[utils Error]: bind missing first argument')
+    if (typeof fun !== 'function') throw new Error('[utils Error]: bind missing first argument.')
     if (arguments.length > 2) {
       argsOut = prototype['objToArray'](arguments, 2)
       return function() {
@@ -367,9 +367,9 @@
     // 默认既执行第一次，也执行最后一次
     !hasLeading && (option.leading = true)
     !hasTrailing && (option.trailing = true)
-    if (typeof fun !== 'function') throw new Error('[utils Error]: throttle missing first argument')
-    if (typeof +delay !== 'number') throw new Error('[utils Error]: throttle missing second argument')
-    if (hasTrailing && hasLeading) throw new Error('[utils Error]: throttle can not pass two options in the same time')
+    if (typeof fun !== 'function') throw new Error('[utils Error]: throttle missing first argument.')
+    if (typeof +delay !== 'number') throw new Error('[utils Error]: throttle missing second argument.')
+    if (hasTrailing && hasLeading) throw new Error('[utils Error]: throttle can not pass two options in the same time.')
     return function() {
       var args = arguments,
         context = this
@@ -427,7 +427,7 @@
   prototype['sleep'] = function(milliSeconds) {
     var now = Date.now()
     if (typeof milliSeconds !== 'number')
-      throw new Error('[utils Error]: sleep function please pass Number')
+      throw new Error('[utils Error]: sleep function please pass Number.')
     while (Date.now() < now + milliSeconds);
   }
   /**
@@ -444,10 +444,10 @@
    */
   prototype['composeStack'] = function(arr) {
     if (!Array.isArray(arr))
-      throw new Error('[utils Error]: composeStack function\'s Function stack must be array')
+      throw new Error('[utils Error]: composeStack function\'s Function stack must be array.')
     arr.forEach(function(fun) {
       if (typeof fun !== 'function')
-        throw new Error('[utils Error]: composeStack function\'s Function stack must be composed of functions')
+        throw new Error('[utils Error]: composeStack function\'s Function stack must be composed of functions.')
     })
     return function(arg) {
       var index = -1
@@ -474,7 +474,7 @@
       funs = prototype['objToArray'](arguments)
     funs.forEach(function(fun) {
       if (typeof fun !== 'function')
-        throw new Error('[utils Error]: compose function\'s arguments must be function')
+        throw new Error('[utils Error]: compose function\'s arguments must be function.')
     })
     return function(arg) {
       var res = funs[index++].call(this, arg)
@@ -519,7 +519,7 @@
       if (_args.length === length) {
         return fn.apply(this, _args)
       } else {
-        throw new Error('[utils Error]: partial function missing arguments')
+        throw new Error('[utils Error]: partial function missing arguments.')
       }
     }
   }
@@ -551,11 +551,11 @@
       }
     } else {
       res = {}
-      for (var k in obj) {
+      Object.getOwnPropertyNames(obj).forEach((k) => {
         typeof obj[k] === 'object'
           ? (res[k] = deepClone(obj[k]))
           : (res[k] = obj[k])
-      }
+      })
     }
     return res
   }
@@ -572,13 +572,16 @@
       for (var i = 1; i < length; i++) {
         for (var k in arguments[i]) {
           // 若当前属性就等于要拓展的对象，则退出，防止循环引用
-          if (arguments[i][k] === res) continue
+          if (arguments[i][k] === res) {
+            console.warn('[utils Warning]: assigned object\'s property ' + k + ' has circular reference, utils has canceled assign this property.')
+            continue
+          }
           res[k] = arguments[i][k]
         }
       }
       return res
     } else {
-      throw new Error('[utils Error]: assign function\'s first argument must be an Object')
+      throw new Error('[utils Error]: assign function\'s first argument must be an Object.')
     }
   }
   /**
@@ -595,7 +598,10 @@
         for (var k in arguments[i]) {
           var val = arguments[i][k]
           // 若当前属性就等于要拓展的对象，则退出，防止循环引用
-          if (val === res) continue
+          if (val === res) {
+            console.warn('[utils Warning]: deep assigned object\'s property ' + k + ' has circular reference, utils has canceled deep assign this property.')
+            continue
+          }
           if (typeof res[k] === 'object' && typeof val === 'object') {
             deepAssign(res[k], val)
           } else {
@@ -605,7 +611,7 @@
       }
       return res
     } else {
-      throw new Error('[utils Error]: deepAssign function\'s first argument must be an Object')
+      throw new Error('[utils Error]: deepAssign function\'s first argument must be an Object.')
     }
   }
   /**
@@ -670,7 +676,7 @@
       }, obj)
     }
     else {
-      throw new Error('[utils Error]: get function invalid arguments')
+      throw new Error('[utils Error]: get function invalid arguments.')
     }
   }
   /**
@@ -680,7 +686,7 @@
    */
   prototype['invert'] = function(obj) {
     var newObj = {}
-    if (!prototype['isObject'](obj)) throw new Error('[utils Error]: invert first argument must be Object')
+    if (!prototype['isObject'](obj)) throw new Error('[utils Error]: invert first argument must be Object.')
     Object.keys(obj).forEach(key => {
       var newKey = obj[key]
       newObj[newKey] = key
@@ -688,7 +694,7 @@
     return newObj
   }
 
-  // 其他
+  // url相关
   /**
    * 向url中添加参数
    * @param  {String} href     [url字符串]
@@ -718,6 +724,27 @@
     return res
   }
   /**
+   * 获取url参数
+   * @param  {String} href [链接]
+   * @return {Object}      [所有参数对象，键为参数名，值为参数值]
+   */
+  prototype['getQuery'] = function (href) {
+    var url = href || location.href
+    var query = url.split('?')[1] || ''
+    query = query.replace(/#.*$/, '')
+    var res = {}
+    if (query) {
+      var params = query.split('&')
+      params.forEach((paramStr) => {
+        var param = paramStr.split('=')
+        var key = param[0]
+        var val = param[1]
+        res[key] = val
+      })
+    }
+    return res
+  }
+  /**
    * 获取pathname中每个路径的名称
    * @param  {String} pathname [路由路径]
    * @return {Array}          [每个路径名称数组]
@@ -725,6 +752,8 @@
   prototype['getPaths'] = function(pathname) {
     return pathname.split('/').slice(1)
   }
+
+  // 类型判断
   /**
    * 判断是否为Object类型
    * @param  {any}       arg     [任意类型参数]

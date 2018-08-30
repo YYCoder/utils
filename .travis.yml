@@ -1,0 +1,29 @@
+language: node_js
+
+node_js:
+  - "8.10.0"
+
+# safelist
+branches:
+  only:
+  - master
+
+notifications:
+  email:
+    recipients:
+      - markeyyuan@gmail.com
+  on_success: change
+  on_failure: always
+
+install:
+  - yarn
+
+before_install: 
+
+script:
+  - yarn test
+
+before_deploy: 
+
+deploy:
+  skip_cleanup: true
