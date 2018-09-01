@@ -7,11 +7,14 @@
   "author": "Markey",
   "license": "MIT",
   "devDependencies": {
+    "coveralls": "^3.0.2",
     "mocha": "^5.2.0",
+    "mocha-lcov-reporter": "^1.3.0",
     "nyc": "^11.8.0",
     "power-assert": "^1.5.0"
   },
   "scripts": {
-    "test": "nyc ./node_modules/mocha/bin/mocha -u bdd"
+    "test": " nyc ./node_modules/mocha/bin/mocha -u bdd",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
   }
 }
