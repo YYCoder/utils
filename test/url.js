@@ -2,7 +2,8 @@ const assert = require('power-assert')
 const {
   addQuery,
   getPaths,
-  getQuery
+  getQuery,
+  toQuery
 } = require('../src/util')
 
 function deepEq(actual, value, message) {
@@ -64,6 +65,21 @@ describe('url方法：', () => {
     it('有参数，有hash，得到参数对象', () => {
       const href = `${host}${path}?${query}#/hash`
       deepEq(getQuery(href), { test: 'test', a: 'b' }, '返回结果不正确')
+    })
+  })
+
+  describe('toQuery: ', () => {
+    it('只有一个参数，应返回 test=123', () => {
+      deepEq(toQuery({ test: 123 }), 'test=123', '返回结果不正确')
+    })
+    it('两个参数，应返回 test=123&name=456', () => {
+      deepEq(toQuery({ test: 123, name: 456 }), 'test=123&name=456', '返回结果不正确')
+    })
+    it('传入空对象，应返回空字符串', () => {
+      deepEq(toQuery({}), '', '返回结果不正确')
+    })
+    it('不传参数，应返回空字符串', () => {
+      deepEq(toQuery(), '', '返回结果不正确')
     })
   })
 })
