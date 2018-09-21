@@ -753,6 +753,17 @@
   prototype['getPaths'] = function(pathname) {
     return pathname.split('/').slice(1)
   }
+  /**
+   * 对象转query
+   * @param  {Object} params [description]
+   * @return {[type]}        [description]
+   */
+  prototype['toQuery'] = function (params) {
+    var param = params || {}
+    return Object.keys(param).map(key => {
+      return `${key}=${param[key]}`
+    }).join('&') || ''
+  }
 
   // 类型判断
   /**
