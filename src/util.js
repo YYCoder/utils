@@ -539,22 +539,29 @@
    * @param  {any}    obj[必须]   [要克隆的对象]
    * @return {Object}             [克隆完成的对象]
    */
-  prototype['deepClone'] = function deepClone(obj) {
+  prototype['deepClone'] = function deepClone(obj, parent) {
     var res
+    // 通过 parent 参数对象，保存父对象引用
+    var _parent = parent || null
+    // 遍历父对象引用，判断当前节点是否等于祖先中某个节点引用，若是则存在循环引用，直接返回引用的节点
+    while (_parent) {
+      if (obj === _parent.currentParent) return obj
+      _parent = _parent.parent
+    }
     if (typeof obj !== 'object' || obj === null) {
       return obj
     } else if (obj instanceof Array) {
       res = []
       for (var i = 0; i < obj.length; i++) {
         typeof obj[i] === 'object'
-          ? (res[i] = deepClone(obj[i]))
+          ? (res[i] = deepClone(obj[i], { parent: parent, currentParent: obj }))
           : (res[i] = obj[i])
       }
     } else {
       res = {}
       Object.getOwnPropertyNames(obj).forEach((k) => {
         typeof obj[k] === 'object'
-          ? (res[k] = deepClone(obj[k]))
+          ? (res[k] = deepClone(obj[k], { parent: parent, currentParent: obj }))
           : (res[k] = obj[k])
       })
     }

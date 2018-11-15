@@ -69,12 +69,22 @@
     arr = [1, 2, 3, {
       name: 4
     }]
-    var newObj = utils.deepClone(obj1),
-      newArr = utils.deepClone(arr)
+    // var newObj = utils.deepClone(obj1),
+    //   newArr = utils.deepClone(arr)
     obj2.name = '123'
-    console.log(obj1)
-    console.log(newObj)
-    console.log(newArr)*/
+    // console.log(obj1)
+    // console.log(newObj)
+    // console.log(newArr)
+    // 循环引用
+    // var father = {}
+    // father.me = father
+    // console.log(utils.deepClone(father))
+    var f = {}
+    var s = {
+      f: f
+    }
+    f.s = s
+    console.log(utils.deepClone(f))*/
 
 
     // 数组去重
